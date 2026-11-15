@@ -88,7 +88,7 @@ function buildPlayer(session, index, chara = 1) {
   return {
     dbid: index === 0 ? dbid : `bid_robot_${index}`,
     id: index === 0 ? dbid : `bid_robot_${index}`,
-    name: index === 0 ? (player.name || 'Player') : `灵舟道友${index}`,
+    name: index === 0 ? (player.name || 'Player') : `Đạo hữu linh chu ${index}`,
     chara,
     status: 0,
     bids: [],

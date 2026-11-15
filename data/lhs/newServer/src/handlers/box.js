@@ -296,7 +296,7 @@ function buildSummonBossEnemyShowInfo(monster = {}, bossVisualId, power = 0) {
     kungfuId: 0,
     subJob: 0,
     level: Math.max(1, toSafeInt(monster.level, 1)),
-    name: String(monster.monsterName || '魔灵之龙'),
+    name: String(monster.monsterName || 'Ma Linh Long'),
     power: Math.max(0, toSafeInt(power, 0)),
     stage: 1,
     avatar: 0,
@@ -401,7 +401,7 @@ function buildSummonBossFightResult(player, boxCfg, rewardCount) {
       {
         id: bossVisualId,
         dbid: `boss_${bossVisualId}`,
-        name: String(monster.monsterName || '精英怪'),
+        name: String(monster.monsterName || 'Quái tinh anh'),
         type: 2,
         side: 2,
         camp: 2,

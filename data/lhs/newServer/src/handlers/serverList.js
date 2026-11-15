@@ -26,7 +26,7 @@ async function buildServerData(serverIdInput, req, now = Date.now(), roleSummary
     serverId,
     pageId: Number(serverCfg.pageId) || Math.floor(serverId / 1000) || 1,
     pageName: String(serverCfg.pageName || ''),
-    serverName: String(serverCfg.serverName || `大区${serverId}`),
+    serverName: String(serverCfg.serverName || `Máy chủ ${serverId}`),
     url: endpoint.url,
     host: endpoint.host,
     port: endpoint.port,
@@ -79,7 +79,7 @@ function buildRoleCreateOptions() {
         key: optionKey,
         kungfuId,
         subJob: safeSubJob,
-        label: `角色${kungfuId}${safeSubJob === 1 ? '·女' : '·男'}`,
+        label: `Nhân vật ${kungfuId}${safeSubJob === 1 ? ' · Nữ' : ' · Nam'}`,
       });
     });
   });
@@ -95,7 +95,7 @@ function buildRoleCreateOptions() {
       key: '4_0',
       kungfuId: 4,
       subJob: 0,
-      label: '默认角色',
+      label: 'Nhân vật mặc định',
     },
   ];
 }
@@ -659,7 +659,7 @@ async function handleRegisterAccount(params = {}, req) {
       serverTime: now,
       code: 'INVITE_CODE_REQUIRED',
       registerUrl: getRegisterUrl(req),
-      errInfo: '请通过代理邀请链接注册',
+      errInfo: 'Vui lòng đăng ký qua liên kết mời của đại lý',
     };
   }
 
@@ -695,7 +695,7 @@ async function handleRegisterAccount(params = {}, req) {
       result: -1,
       serverTime: now,
       code: isExists ? 'ACCOUNT_EXISTS' : String(code || 'REGISTER_FAILED'),
-      errInfo: isExists ? '账号已存在' : (err.message || '注册失败'),
+      errInfo: isExists ? 'Tài khoản đã tồn tại' : (err.message || 'Đăng ký thất bại'),
     };
   }
 }
@@ -708,7 +708,7 @@ async function handleGetRandomAccount(_params = {}, req) {
       serverTime: now,
       code: 'RANDOM_REGISTER_DISABLED',
       registerUrl: getRegisterUrl(req),
-      errInfo: '随机注册已关闭，请通过代理邀请链接注册',
+      errInfo: 'Đăng ký ngẫu nhiên đã đóng, vui lòng dùng liên kết mời của đại lý',
     };
   }
   const { accountId, password } = await accountService.createRandomAccount();

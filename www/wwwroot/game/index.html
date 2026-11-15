@@ -468,7 +468,7 @@
 		var pageOrigin = window.location.origin || ((securePage ? 'https://' : 'http://') + window.location.host);
 		var httpPort = String(query.get('httpPort') || window.location.port || (securePage ? '443' : '81'));
 		var wsPort = String(query.get('wsPort') || window.location.port || (securePage ? '443' : '81'));
-		var translationVersion = '20260904_linkage365_v1';
+		var translationVersion = '20261115_help_vi_v3';
 		var httpScheme = securePage ? 'https://' : 'http://';
 		var wsScheme = securePage ? 'wss://' : 'ws://';
 		var apiBase = customBackend
@@ -494,7 +494,31 @@
 
 			try {
 				var parsed = new URL(url, window.location.href);
-				if (/(?:config_lang_c2fa8585|config_e5ac72c2|gameEui_18e11b8e|code_bdbbacd8)\.bin$/i.test(parsed.pathname)) {
+				var classIcon = parsed.pathname.match(/\/ui_mg_bm_(1_s_820ff65a|3_s_c46c8ef7|4_s_b9ba2c21|5_s_8d93eb0d|6_s_13447f9b|8_s_26bc71dc)\.png$/i);
+				if (classIcon) {
+					var classId = classIcon[1].split('_')[0];
+					parsed.pathname = parsed.pathname.replace(/ui_mg_bm_[^/]+\.png$/i, 'ui_mg_bm_' + classId + '_s_vi.svg');
+					parsed.searchParams.set('v', 'vi2');
+					url = parsed.href;
+				}
+				var titleIcon = parsed.pathname.match(/\/title_(11201|11202|11203|11204|11206|11207|11208|11209|11210)_[a-f0-9]+\.png$/i);
+				if (titleIcon) {
+					parsed.pathname = parsed.pathname.replace(/title_[^/]+\.png$/i, 'title_' + titleIcon[1] + '_vi.svg');
+					parsed.searchParams.set('v', 'vi1');
+					url = parsed.href;
+				}
+				if (/\/sp_ui_zhandoushengli_88990404\.png$/i.test(parsed.pathname)) {
+					parsed.pathname = parsed.pathname.replace(/sp_ui_zhandoushengli_88990404\.png$/i, 'sp_ui_zhandoushengli_vi.svg');
+					parsed.searchParams.set('v', 'vi2');
+					url = parsed.href;
+				}
+				var domainHelp = parsed.pathname.match(/\/ui_xyzf_bm_sm([1-5])_[a-f0-9]+\.png$/i);
+				if (domainHelp) {
+					parsed.pathname = parsed.pathname.replace(/ui_xyzf_bm_sm[1-5]_[a-f0-9]+\.png$/i, 'ui_xyzf_bm_sm' + domainHelp[1] + '_vi.svg');
+					parsed.searchParams.set('v', 'vi1');
+					url = parsed.href;
+				}
+				if (/(?:config_lang_c2fa8585|config_e5ac72c2|gameEui_18e11b8e|gameEui\.start_7594ef80|code_bdbbacd8)\.bin$/i.test(parsed.pathname)) {
 					parsed.searchParams.set('v', translationVersion);
 					url = parsed.href;
 				}
@@ -519,6 +543,17 @@
 			arguments[1] = rewriteRuntimeUrl(url);
 			return rawXhrOpen.apply(this, arguments);
 		};
+
+		// Egret may load images directly instead of through XMLHttpRequest.
+		var imageSrc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+		if (imageSrc && imageSrc.get && imageSrc.set && imageSrc.configurable) {
+			Object.defineProperty(HTMLImageElement.prototype, 'src', {
+				configurable: true,
+				enumerable: imageSrc.enumerable,
+				get: imageSrc.get,
+				set: function (value) { imageSrc.set.call(this, rewriteRuntimeUrl(value)); }
+			});
+		}
 
 		if (window.fetch) {
 			var rawFetch = window.fetch.bind(window);

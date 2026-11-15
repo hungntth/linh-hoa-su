@@ -6,7 +6,7 @@ include '../config/config.php';
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title><?php echo $gamename; ?>-自助授权</title>
+<title><?php echo $gamename; ?> - Tự cấp quyền</title>
 <link rel="icon" href="favicon.ico" type="image/ico">
 <meta name="author" content="yinqi">
 <link href="images/bootstrap.min.css" rel="stylesheet">
@@ -76,19 +76,19 @@ body{background-image:url("../gm/static/selectpage/bj.jpg");background-size:cove
   <div class="login">
     <div class="login-center">
       <div class="login-header text-center">
-	  <h3><?php echo $gamename; ?>-激活</h3>
+	  <h3><?php echo $gamename; ?> - Kích hoạt</h3>
 	  </div>
           <form method="post" id="register-form" autocomplete="off" action="#" class="nice-validator n-default" novalidate>
             &nbsp;
 			<div class="alert alert-danger">
-                       <strong style="color:red">温馨提示:</strong><br>
-						注意是游戏账号/角色名！<br>
+                       <strong style="color:red">Lưu ý:</strong><br>
+						Nhập tài khoản game hoặc tên nhân vật!<br>
 					 </div>
 			<div class="form-group has-feedback feedback-left">
-			  <input type="text" class="form-control" id="cdk" name="cdk" placeholder="请输入CDKEY" autocomplete="off">
+			  <input type="text" class="form-control" id="cdk" name="cdk" placeholder="Nhập CDKEY" autocomplete="off">
             </div>
 			<div class="form-group has-feedback feedback-left">
-                     <select id="qu" name="qu" class="form-control" title="请选择区服">
+                     <select id="qu" name="qu" class="form-control" title="Chọn máy chủ">
 						<?php
 						foreach($qus as $key=>$value){
 							if($value['hidde']!=true){
@@ -99,14 +99,14 @@ body{background-image:url("../gm/static/selectpage/bj.jpg");background-size:cove
                         </select>
             </div>
 			<div class="form-group has-feedback feedback-left">
-			  <input type="text" class="form-control" id="usr" name="usr" placeholder="请输入<?php echo $namecol; ?>" autocomplete="off">
+			  <input type="text" class="form-control" id="usr" name="usr" placeholder="Nhập <?php echo $namecol; ?>" autocomplete="off">
             </div>
 			<div class="form-group has-feedback feedback-left">
-			  <input type="text" class="form-control" id="pass" name="pass" onKeyUp="value=value.replace(/[\W]/g,'')" placeholder="请填写后台密码(仅支持数字和英文)" autocomplete="off">
+			  <input type="text" class="form-control" id="pass" name="pass" onKeyUp="value=value.replace(/[\W]/g,'')" placeholder="Nhập mật khẩu quản trị (chỉ chữ và số)" autocomplete="off">
             </div>
             <div class="form-group">
-			<input class="btn btn-block btn-primary" name='reg' id="1" value="提交授权" type="button" onclick= "test(this)">
-			<input class="btn btn-block btn-primary" value="前往后台" type="button" onclick="window.location.href='../gm'">
+			<input class="btn btn-block btn-primary" name='reg' id="1" value="Gửi yêu cầu cấp quyền" type="button" onclick= "test(this)">
+			<input class="btn btn-block btn-primary" value="Vào trang quản trị" type="button" onclick="window.location.href='../gm'">
 			</div><br>
 		<footer class="col-sm-12 text-center"><p class="m-b-0">　<?php echo $gamename; ?> &copy; <?php echo $copyright; ?>　　　　</p>
 		</footer>
@@ -123,8 +123,8 @@ function api(){
 		qu:$("#qu").val()
 	},function(data){ 
             $('input[name=reg]').attr('id','1');  
-            $('input[name=reg]').attr('value','提交授权');
-            bootbox.alert({message:data,title:"提示"});
+            $('input[name=reg]').attr('value','Gửi yêu cầu cấp quyền');
+            bootbox.alert({message:data,title:"Thông báo"});
 	});
  }
  
@@ -132,11 +132,11 @@ function test(obj){
     var _status = obj.id;  
     if(_status != '1'){  
          $('input[name=reg]').attr('id','0'); 		 
-         $('input[name=reg]').attr('value','正在提交...');
+         $('input[name=reg]').attr('value','Đang gửi...');
 		 return false;  
     }else{  
          $('input[name=reg]').attr('id','0');  
-         $('input[name=reg]').attr('value','正在提交...');
+         $('input[name=reg]').attr('value','Đang gửi...');
          api();   
     }    
 };

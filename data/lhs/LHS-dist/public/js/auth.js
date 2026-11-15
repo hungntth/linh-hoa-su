@@ -19,7 +19,7 @@ class Auth {
       const response = await api.getProfile();
       return response.success ? response.data : null;
     } catch (error) {
-      console.error('获取用户信息失败:', error);
+      console.error('Không thể lấy thông tin người dùng:', error);
       return null;
     }
   }
@@ -59,7 +59,7 @@ class Auth {
     }
 
     if (!['root', 'admin'].includes(user.role)) {
-      showToast('需要管理员权限', 'warning');
+      showToast('Cần quyền quản trị viên', 'warning');
       window.location.href = this.pageUrl('/dashboard.html');
       return null;
     }

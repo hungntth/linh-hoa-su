@@ -28,7 +28,7 @@ router.post('/register', validate(registerSchema), async (req, res, next) => {
 
     res.json({
       success: true,
-      message: '注册申请已提交，等待上级审核',
+      message: 'Đã gửi yêu cầu đăng ký, vui lòng chờ đại lý cấp trên duyệt',
       data: agent,
     });
   } catch (error) {
@@ -56,7 +56,7 @@ router.post('/login', loginLimiter, validate(loginSchema), async (req, res, next
 
     res.json({
       success: true,
-      message: '登录成功',
+      message: 'Đăng nhập thành công',
       data: { agent, token },
     });
   } catch (error) {
@@ -150,7 +150,7 @@ router.put('/child-agent/:id/review', authenticate, validate(agentReviewSchema),
     });
     res.json({
       success: true,
-      message: req.body.action === 'approve' ? '下级审核通过' : '已拒绝下级申请',
+      message: req.body.action === 'approve' ? 'Đã duyệt đại lý cấp dưới' : 'Đã từ chối yêu cầu của đại lý cấp dưới',
       data: child,
     });
   } catch (error) {
@@ -317,7 +317,7 @@ router.get('/children/:id/detail', authenticate, async (req, res, next) => {
 router.put('/children/:id/role', authenticate, validate(childRoleUpdateSchema), async (req, res, next) => {
   try {
     const data = await agentService.updateManagedChildRole(req.agent, req.params.id, req.body);
-    res.json({ success: true, message: '下级层级已更新', data });
+    res.json({ success: true, message: 'Đã cập nhật cấp bậc của đại lý cấp dưới', data });
   } catch (error) {
     next(error);
   }
@@ -337,7 +337,7 @@ router.put('/children/:id/password', authenticate, validate(childPasswordResetSc
       userAgent: req.get('user-agent'),
       result: 'success',
     });
-    res.json({ success: true, message: '下级代理密码已重置', data });
+    res.json({ success: true, message: 'Đã đặt lại mật khẩu đại lý cấp dưới', data });
   } catch (error) {
     next(error);
   }

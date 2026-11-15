@@ -28,7 +28,7 @@ async function applyWithdrawal(agentId, { amount, bankInfo }) {
     );
 
     if (!agent) {
-      throw new Error('余额不足或代理商不存在');
+      throw new Error('Số dư không đủ hoặc đại lý không tồn tại');
     }
 
     const withdrawal = new Withdrawal({
@@ -48,7 +48,7 @@ async function applyWithdrawal(agentId, { amount, bankInfo }) {
       balanceAfter: agent.balance - amount,
       relatedId: withdrawal._id,
       relatedType: 'Withdrawal',
-      description: `提现申请 - ${actualAmount / 100}元`,
+      description: `Yêu cầu rút tiền - ${actualAmount / 100} tệ`,
       metadata: {
         amount,
         fee,
@@ -105,9 +105,9 @@ async function approveWithdrawal(withdrawalId, approvedBy) {
     if (!withdrawal) {
       const existing = await Withdrawal.findById(withdrawalId).session(session || null);
       if (!existing) {
-        throw new Error('提现记录不存在');
+        throw new Error('Không tìm thấy yêu cầu rút tiền');
       }
-      throw new Error('提现记录状态不正确');
+      throw new Error('Trạng thái yêu cầu rút tiền không hợp lệ');
     }
 
     return withdrawal;
@@ -138,9 +138,9 @@ async function rejectWithdrawal(withdrawalId, approvedBy, rejectReason) {
     if (!withdrawal) {
       const existing = await Withdrawal.findById(withdrawalId).session(session || null);
       if (!existing) {
-        throw new Error('提现记录不存在');
+        throw new Error('Không tìm thấy yêu cầu rút tiền');
       }
-      throw new Error('提现记录状态不正确');
+      throw new Error('Trạng thái yêu cầu rút tiền không hợp lệ');
     }
 
     const updatedAgent = await Agent.findByIdAndUpdate(
@@ -161,7 +161,7 @@ async function rejectWithdrawal(withdrawalId, approvedBy, rejectReason) {
       balanceAfter: updatedAgent.balance,
       relatedId: withdrawal._id,
       relatedType: 'Withdrawal',
-      description: `提现退款 - ${rejectReason}`,
+      description: `Hoàn tiền rút - ${rejectReason}`,
       metadata: {
         amount: withdrawal.amount,
         rejectReason,

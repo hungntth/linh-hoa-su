@@ -9,7 +9,7 @@ const loginLimiter = rateLimit({
   max: 50000, // 最多5次
   message: {
     success: false,
-    message: '登录失败次数过多，请30分钟后再试',
+    message: 'Đăng nhập thất bại quá nhiều lần, vui lòng thử lại sau 30 phút',
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -25,7 +25,7 @@ const apiLimiter = rateLimit({
   max: config.isProduction ? 10000 : 10000,
   message: {
     success: false,
-    message: '请求过于频繁，请稍后再试',
+    message: 'Yêu cầu quá thường xuyên, vui lòng thử lại sau',
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -40,7 +40,7 @@ const sensitiveLimiter = rateLimit({
   max: 100, // 最多10次
   message: {
     success: false,
-    message: '操作过于频繁，请稍后再试',
+    message: 'Thao tác quá thường xuyên, vui lòng thử lại sau',
   },
   standardHeaders: true,
   legacyHeaders: false,

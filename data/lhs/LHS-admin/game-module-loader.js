@@ -70,7 +70,7 @@
       document.title = sourceDoc.title || document.title;
       replaceBody(sourceDoc, scripts);
     } catch (error) {
-      showError(`加载模块失败：${error.message}`);
+      showError(`Không thể tải mô-đun: ${error.message}`);
     }
   }
 

@@ -35,11 +35,11 @@ router.post(
   validate(
     Joi.object({
       playerId: Joi.string().required().messages({
-        'any.required': '玩家ID不能为空',
+        'any.required': 'ID người chơi không được để trống',
       }),
       inviteCode: Joi.string().length(6).uppercase().required().messages({
-        'string.length': '邀请码必须为6位',
-        'any.required': '邀请码不能为空',
+        'string.length': 'Mã mời phải có 6 ký tự',
+        'any.required': 'Mã mời không được để trống',
       }),
     })
   ),
@@ -52,7 +52,7 @@ router.post(
       if (existingBinding) {
         return res.status(400).json({
           success: false,
-          message: '该玩家已绑定邀请码',
+          message: 'Người chơi này đã liên kết mã mời',
         });
       }
 
@@ -61,14 +61,14 @@ router.post(
       if (!agent) {
         return res.status(400).json({
           success: false,
-          message: '邀请码不存在',
+          message: 'Mã mời không tồn tại',
         });
       }
 
       if (agent.status !== 'active') {
         return res.status(400).json({
           success: false,
-          message: '代理已被禁用',
+          message: 'Đại lý đã bị vô hiệu hóa',
         });
       }
 

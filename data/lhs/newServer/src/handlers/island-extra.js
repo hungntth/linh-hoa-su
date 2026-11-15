@@ -199,7 +199,7 @@ async function handleIslandPlayerReport(_params, session, msgUid) {
   const reports = ensureArray(info.moveHistory).slice(-20).map((row, idx) => ({
     id: idx + 1,
     time: Math.floor(Date.now() / 1000) - (20 - idx) * 60,
-    desc: `玩家移动到坐标(${toSafeInt(row && row.x, 0)},${toSafeInt(row && row.y, 0)})`,
+    desc: `Người chơi di chuyển đến tọa độ (${toSafeInt(row && row.x, 0)},${toSafeInt(row && row.y, 0)})`,
   }));
 
   await playerService.savePlayer(session.userId, player);
@@ -216,7 +216,7 @@ async function handleIslandBuildingReport(_params, session, msgUid) {
     id: idx + 1,
     time: Math.max(0, toSafeInt(row && row.time, 0)),
     type: Math.max(0, toSafeInt(row && row.type, 0)),
-    desc: row && row.desc ? String(row.desc) : '建筑状态更新',
+    desc: row && row.desc ? String(row.desc) : 'Đã cập nhật trạng thái công trình',
   }));
 
   await playerService.savePlayer(session.userId, player);

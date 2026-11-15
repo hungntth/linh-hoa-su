@@ -253,7 +253,7 @@ function buildCrossRivalFightResult(player = {}, raidType = 61, targetId = '') {
       {
         id: 11301,
         dbid: String(targetId || `cross_rival_${raidType}`),
-        name: raidType === 63 ? '魔灵法阵' : (raidType === 61 ? '魔灵守卫' : '魔灵入侵者'),
+        name: raidType === 63 ? 'Pháp trận Ma Linh' : (raidType === 61 ? 'Hộ vệ Ma Linh' : 'Kẻ xâm lược Ma Linh'),
         type: 2,
         side: 2,
         camp: 2,
@@ -265,7 +265,7 @@ function buildCrossRivalFightResult(player = {}, raidType = 61, targetId = '') {
         vars: buildFightVars(enemyHpMax),
         showInfo: buildCrossRivalShowInfo(player, {
           dbid: String(targetId || `cross_rival_${raidType}`),
-          name: raidType === 63 ? '魔灵法阵' : (raidType === 61 ? '魔灵守卫' : '魔灵入侵者'),
+          name: raidType === 63 ? 'Pháp trận Ma Linh' : (raidType === 61 ? 'Hộ vệ Ma Linh' : 'Kẻ xâm lược Ma Linh'),
           level: Math.max(1, toSafeInt(player.level, 1)),
           power: Math.max(100, Math.floor(enemyHpMax / 3)),
           petId: 0,
@@ -1060,7 +1060,7 @@ async function handleCrossRivalStartFight(params, session, msgUid) {
     raidType,
     targetId,
     attacker: info.mapId === info.camp ? 0 : 1,
-    enemyName: fightResult.entitys && fightResult.entitys[1] ? String(fightResult.entitys[1].name || '') : '魔灵入侵者',
+    enemyName: fightResult.entitys && fightResult.entitys[1] ? String(fightResult.entitys[1].name || '') : 'Kẻ xâm lược Ma Linh',
   };
   const taskChanged = !!addCrossRivalChallengeCount(player, 1);
 
@@ -1146,7 +1146,7 @@ async function handleCrossRivalFinishFight(_params, session, msgUid) {
       result: 0,
       assistScore: info.assistScore,
       raidType,
-      enemyName: String(lastFight.enemyName || '魔灵入侵者'),
+      enemyName: String(lastFight.enemyName || 'Kẻ xâm lược Ma Linh'),
       isWin: 1,
       attacker,
       scoreInc,

@@ -46,11 +46,11 @@ async function calculateCommission({ playerId, orderId, amount, inviteCode }) {
       }
 
       if (!sourceAgent) {
-        throw new Error('未找到代理商');
+        throw new Error('Không tìm thấy đại lý');
       }
 
       if (sourceAgent.status !== 'active') {
-        throw new Error('代理已被禁用');
+        throw new Error('Đại lý đã bị vô hiệu hóa');
       }
 
       const agentChain = [sourceAgent];
@@ -107,7 +107,7 @@ async function calculateCommission({ playerId, orderId, amount, inviteCode }) {
           balanceAfter: updatedAgent.balance,
           relatedId: commission._id,
           relatedType: 'Commission',
-          description: `佣金入账 - 订单${orderId}`,
+          description: `Hoa hồng đã ghi nhận - đơn hàng ${orderId}`,
           metadata: {
             playerId,
             orderId,
@@ -135,7 +135,7 @@ async function calculateCommission({ playerId, orderId, amount, inviteCode }) {
     }, { label: 'commission.calculate' });
   } catch (error) {
     if (isDuplicateKeyError(error)) {
-      throw new Error('订单已处理');
+      throw new Error('Đơn hàng đã được xử lý');
     }
     throw error;
   }

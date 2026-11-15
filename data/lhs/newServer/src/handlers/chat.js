@@ -200,7 +200,7 @@ function handleSendChat(params, session, msgUid, options = {}) {
         data: {
           result: 2,
           channel: ensureChannel(params && params.channel),
-          msg: adminStatus.muteReason || '当前账号已被禁言',
+          msg: adminStatus.muteReason || 'Tài khoản hiện đang bị cấm trò chuyện',
         },
       };
     }
@@ -235,7 +235,7 @@ function pushSystemBroadcast(content, options = {}) {
       userId: 0,
       serverId: toSafeInt(process.env.SERVER_ID, 1),
       serverName: process.env.SERVER_NAME || '',
-      name: options.name || '系统',
+      name: options.name || 'Hệ thống',
       avatar: toSafeInt(options.avatar, 0),
       avatarFrame: -1,
       level: 0,
@@ -256,7 +256,7 @@ function pushSystemBroadcast(content, options = {}) {
   pushHistory(CHAT_CHANNEL_SYSTEM, entry);
   messageService.pushGlobalNotice({
     type: 'broadcast',
-    title: options.title || '系统广播',
+    title: options.title || 'Thông báo hệ thống',
     content: text,
     time: entry.time,
   });

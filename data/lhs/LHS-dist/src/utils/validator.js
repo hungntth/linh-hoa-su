@@ -24,24 +24,24 @@ const agentPermissionsSchema = Joi.object({
  */
 const registerSchema = Joi.object({
   username: Joi.string().trim().min(3).max(20).custom(validateAllowedUsername).required().messages({
-    'string.min': '用户名至少3个字符',
-    'string.max': '用户名最多20个字符',
-    'any.required': '用户名不能为空',
+    'string.min': 'Tên đăng nhập phải có ít nhất 3 ký tự',
+    'string.max': 'Tên đăng nhập tối đa 20 ký tự',
+    'any.required': 'Tên đăng nhập không được để trống',
   }),
   password: Joi.string().min(6).required().messages({
-    'string.min': '密码至少6个字符',
-    'any.required': '密码不能为空',
+    'string.min': 'Mật khẩu phải có ít nhất 6 ký tự',
+    'any.required': 'Mật khẩu không được để trống',
   }),
   phone: Joi.string()
     .pattern(/^1[3-9]\d{9}$/)
     .allow('', null)
     .optional()
     .messages({
-      'string.pattern.base': '手机号格式不正确',
+      'string.pattern.base': 'Số điện thoại không đúng định dạng',
     }),
   parentInviteCode: Joi.string().length(6).uppercase().required().messages({
-    'string.length': '邀请码必须为6位',
-    'any.required': '邀请码不能为空',
+    'string.length': 'Mã mời phải có 6 ký tự',
+    'any.required': 'Mã mời không được để trống',
   }),
 });
 
@@ -50,10 +50,10 @@ const registerSchema = Joi.object({
  */
 const loginSchema = Joi.object({
   username: Joi.string().required().messages({
-    'any.required': '用户名不能为空',
+    'any.required': 'Tên đăng nhập không được để trống',
   }),
   password: Joi.string().required().messages({
-    'any.required': '密码不能为空',
+    'any.required': 'Mật khẩu không được để trống',
   }),
 });
 
@@ -62,18 +62,18 @@ const loginSchema = Joi.object({
  */
 const withdrawalSchema = Joi.object({
   amount: Joi.number().integer().min(100).required().messages({
-    'number.min': '提现金额至少1元（100分）',
-    'any.required': '提现金额不能为空',
+    'number.min': 'Số tiền rút tối thiểu là 1 tệ (100 xu)',
+    'any.required': 'Số tiền rút không được để trống',
   }),
   bankInfo: Joi.object({
     bankName: Joi.string().required().messages({
-      'any.required': '银行名称不能为空',
+      'any.required': 'Tên ngân hàng không được để trống',
     }),
     accountName: Joi.string().required().messages({
-      'any.required': '账户名不能为空',
+      'any.required': 'Tên chủ tài khoản không được để trống',
     }),
     accountNumber: Joi.string().required().messages({
-      'any.required': '账号不能为空',
+      'any.required': 'Số tài khoản không được để trống',
     }),
   }).required(),
 });
@@ -83,17 +83,17 @@ const withdrawalSchema = Joi.object({
  */
 const rechargeCallbackSchema = Joi.object({
   playerId: Joi.string().required().messages({
-    'any.required': '玩家ID不能为空',
+    'any.required': 'ID người chơi không được để trống',
   }),
   orderId: Joi.string().required().messages({
-    'any.required': '订单ID不能为空',
+    'any.required': 'ID đơn hàng không được để trống',
   }),
   amount: Joi.number().integer().min(1).required().messages({
-    'number.min': '充值金额必须大于0',
-    'any.required': '充值金额不能为空',
+    'number.min': 'Số tiền nạp phải lớn hơn 0',
+    'any.required': 'Số tiền nạp không được để trống',
   }),
   inviteCode: Joi.string().length(6).uppercase().optional().messages({
-    'string.length': '邀请码必须为6位',
+    'string.length': 'Mã mời phải có 6 ký tự',
   }),
 });
 
@@ -102,11 +102,11 @@ const rechargeCallbackSchema = Joi.object({
  */
 const bindInviteSchema = Joi.object({
   playerId: Joi.string().required().messages({
-    'any.required': '玩家ID不能为空',
+    'any.required': 'ID người chơi không được để trống',
   }),
   inviteCode: Joi.string().length(6).uppercase().required().messages({
-    'string.length': '邀请码必须为6位',
-    'any.required': '邀请码不能为空',
+    'string.length': 'Mã mời phải có 6 ký tự',
+    'any.required': 'Mã mời không được để trống',
   }),
 });
 
@@ -115,11 +115,11 @@ const bindInviteSchema = Joi.object({
  */
 const agentStatusSchema = Joi.object({
   status: Joi.string().valid('pending', 'active', 'rejected', 'suspended', 'banned').required().messages({
-    'any.only': '状态必须是 pending、active、rejected、suspended 或 banned',
-    'any.required': '状态不能为空',
+    'any.only': 'Trạng thái phải là pending, active, rejected, suspended hoặc banned',
+    'any.required': 'Trạng thái không được để trống',
   }),
   reason: Joi.string().allow('', null).messages({
-    'string.base': '原因必须是字符串',
+    'string.base': 'Lý do phải là chuỗi',
   }),
 });
 
@@ -145,7 +145,7 @@ const adminAgentProfileSchema = Joi.object({
  */
 const withdrawalApproveSchema = Joi.object({
   remark: Joi.string().allow('', null).messages({
-    'string.base': '备注必须是字符串',
+    'string.base': 'Ghi chú phải là chuỗi',
   }),
 });
 
@@ -154,7 +154,7 @@ const withdrawalApproveSchema = Joi.object({
  */
 const withdrawalRejectSchema = Joi.object({
   reason: Joi.string().required().messages({
-    'any.required': '拒绝原因不能为空',
+    'any.required': 'Lý do từ chối không được để trống',
   }),
 });
 
@@ -173,8 +173,8 @@ const childRoleUpdateSchema = Joi.object({
 
 const childPasswordResetSchema = Joi.object({
   password: Joi.string().min(6).required().messages({
-    'string.min': '密码至少6个字符',
-    'any.required': '密码不能为空',
+    'string.min': 'Mật khẩu phải có ít nhất 6 ký tự',
+    'any.required': 'Mật khẩu không được để trống',
   }),
 });
 

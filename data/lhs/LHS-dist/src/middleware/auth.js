@@ -10,7 +10,7 @@ async function authenticate(req, res, next) {
     // 从 Authorization header 获取 token
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ success: false, message: '未提供认证令牌' });
+      return res.status(401).json({ success: false, message: 'Chưa cung cấp mã xác thực' });
     }
 
     const token = authHeader.substring(7);
@@ -21,11 +21,11 @@ async function authenticate(req, res, next) {
     // 查询代理商信息
     const agent = await Agent.findById(decoded.id);
     if (!agent) {
-      return res.status(401).json({ success: false, message: '代理商不存在' });
+      return res.status(401).json({ success: false, message: 'Đại lý không tồn tại' });
     }
 
     if (agent.status !== 'active') {
-      return res.status(403).json({ success: false, message: '账号已被禁用' });
+      return res.status(403).json({ success: false, message: 'Tài khoản đã bị vô hiệu hóa' });
     }
 
     // 将代理商信息挂载到 req 对象
@@ -33,12 +33,12 @@ async function authenticate(req, res, next) {
     next();
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({ success: false, message: '无效的认证令牌' });
+      return res.status(401).json({ success: false, message: 'Mã xác thực không hợp lệ' });
     }
     if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({ success: false, message: '认证令牌已过期' });
+      return res.status(401).json({ success: false, message: 'Mã xác thực đã hết hạn' });
     }
-    return res.status(500).json({ success: false, message: '认证失败' });
+    return res.status(500).json({ success: false, message: 'Xác thực thất bại' });
   }
 }
 
@@ -48,7 +48,7 @@ async function authenticate(req, res, next) {
 function authenticateInternal(req, res, next) {
   const apiKey = req.headers['x-api-key'];
   if (!apiKey || apiKey !== config.internalApiKey) {
-    return res.status(401).json({ success: false, message: '无效的 API Key' });
+    return res.status(401).json({ success: false, message: 'API Key không hợp lệ' });
   }
   next();
 }

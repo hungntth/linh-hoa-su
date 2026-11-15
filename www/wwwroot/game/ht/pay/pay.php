@@ -17,10 +17,10 @@ $cdk = str_replace([" ", "%"], "", $cdk);
 $pas = str_replace([" ", "%"], "", $pas);
 
 // 3. 基础验证
-if ($cdk == "") die("请输入CDKEY");
-if (!$quid) die("请先选区");
-if ($usr == "") die("请输入游戏账号/角色名");
-if ($pas == "") die("请输入后台密码");
+if ($cdk == "") die("Vui lòng nhập CDKEY");
+if (!$quid) die("Vui lòng chọn máy chủ");
+if ($usr == "") die("Vui lòng nhập tài khoản game hoặc tên nhân vật");
+if ($pas == "") die("Vui lòng nhập mật khẩu quản trị");
 
 // 4. 数据库连接
 $mysqlcdk = mysqli_connect(
@@ -29,7 +29,7 @@ $mysqlcdk = mysqli_connect(
     $PZ["DB_PWD"],
     $PZ["DB_NAME"],
     $PZ["DB_PORT"]
-) or die("数据库连接错误!!!");
+) or die("Không thể kết nối cơ sở dữ liệu!");
 
 $mysqlcdk->query("set names utf8");
 
@@ -43,10 +43,10 @@ $stmt_check_cdk->close();
 
 // 验证 CDK 有效性
 if (!$xxx || $xxx["cdk"] == "") {
-    die("无此授权卡");
+    die("Mã cấp quyền không tồn tại");
 }
 if ($xxx["status"] != 0) {
-    die("此授权卡已被使用");
+    die("Mã cấp quyền đã được sử dụng");
 }
 
 // 计算目标等级
@@ -70,16 +70,16 @@ if ($xlx == 100) {
     $stmt_update->bind_param("ssis", $usr, $pas, $quid, $cdk);
     
     if ($stmt_update->execute()) {
-        die("游戏账号/角色名授权成功！请妥善保管您设置的后台密码");
+        die("Đã cấp quyền cho tài khoản game hoặc nhân vật! Hãy giữ an toàn mật khẩu quản trị của bạn.");
     } else {
-        die("授权失败.请联系管理员");
+        die("Cấp quyền thất bại. Vui lòng liên hệ quản trị viên.");
     }
     $stmt_update->close();
 
 } else {
     // 情况2: 账号已存在，进行等级比对
     if ($xlx == $lx) {
-        die("此游戏账号/角色名已是授权用户,无需再次开通");
+        die("Tài khoản game hoặc nhân vật này đã được cấp quyền.");
     } elseif ($xlx < $lx) {
         // 等级不足，先删除旧记录，再更新
         $stmt_del = $mysqlcdk->prepare("DELETE FROM cdk WHERE uid = ? AND qid = ? LIMIT 1");
@@ -91,15 +91,15 @@ if ($xlx == 100) {
         $stmt_upgrade->bind_param("ssis", $usr, $pas, $quid, $cdk);
         
         if ($stmt_upgrade->execute()) {
-            die("游戏账号/角色名授权成功！请妥善保管您设置的后台密码");
+            die("Đã cấp quyền cho tài khoản game hoặc nhân vật! Hãy giữ an toàn mật khẩu quản trị của bạn.");
         } else {
-            die("授权失败.请联系管理员");
+            die("Cấp quyền thất bại. Vui lòng liên hệ quản trị viên.");
         }
         $stmt_upgrade->close();
         
     } else {
         // xlx > lx
-        die("此游戏账号/角色名已是授权用户,无需再次开通");
+        die("Tài khoản game hoặc nhân vật này đã được cấp quyền.");
     }
 }
 

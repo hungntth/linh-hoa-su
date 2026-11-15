@@ -6,8 +6,8 @@ if (servers.countDocuments({}) === 0) {
   servers.insertOne({
     serverId: 1001,
     pageId: 1,
-    pageName: 'Linh Họa Sư',
-    serverName: 'Máy chủ 1',
+    pageName: 'Kiếm Chỉ Thương Khung',
+    serverName: 'Thương Khung',
     isNew: true,
     isRecommend: true,
     status: 1,

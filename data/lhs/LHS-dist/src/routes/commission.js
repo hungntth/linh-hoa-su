@@ -56,7 +56,7 @@ router.get('/export', authenticate, async (req, res, next) => {
 
     // 生成 CSV
     const csv = [
-      '时间,订单号,玩家ID,充值金额,佣金金额,佣金比例,层级,状态',
+      'Thời gian,Mã đơn hàng,ID người chơi,Số tiền nạp,Hoa hồng,Tỷ lệ hoa hồng,Cấp bậc,Trạng thái',
       ...commissions.map((c) =>
         [
           new Date(c.createdAt).toLocaleString('zh-CN'),
@@ -65,8 +65,8 @@ router.get('/export', authenticate, async (req, res, next) => {
           c.amount / 100,
           c.commission / 100,
           (c.rate * 100).toFixed(0) + '%',
-          c.level === 0 ? '直接' : `${c.level}级`,
-          c.status === 'settled' ? '已结算' : '待结算',
+          c.level === 0 ? 'Trực tiếp' : `Cấp ${c.level}`,
+          c.status === 'settled' ? 'Đã quyết toán' : 'Chờ quyết toán',
         ].join(',')
       ),
     ].join('\n');

@@ -357,7 +357,7 @@ function normalizePlayerDbid(value, fallbackDigit = '1') {
 
 function buildBattlePlayer(player = {}, dbid, name) {
   return {
-    dbid: normalizePlayerDbid(dbid, name === '灵舟对手' ? '2' : '1'),
+    dbid: normalizePlayerDbid(dbid, name === 'Đối thủ linh chu' ? '2' : '1'),
     name: String(name || player.name || 'Player'),
     avatar: Math.max(0, toSafeInt(player.avatar, 11301)),
     avatarFrame: Math.max(0, toSafeInt(player.avatarFrame, 0)),
@@ -406,7 +406,7 @@ function ensureOldTrekInfo(player = {}) {
   info.job = Math.max(0, toSafeInt(info.job, 0));
   info.battleLogUid = Math.max(0, toSafeInt(info.battleLogUid, 0));
   info.arenaLogUid = Math.max(0, toSafeInt(info.arenaLogUid, 0));
-  info.name = info.name == null || info.name === '' ? '灵舟' : String(info.name);
+  info.name = info.name == null || info.name === '' ? 'Linh chu' : String(info.name);
   info.skin = Math.max(1, toSafeInt(info.skin, DEFAULT_SHIP_SKIN));
   info.shipSkins = ensureArray(info.shipSkins).map((id) => Math.max(0, toSafeInt(id, 0))).filter((id, idx, arr) => id > 0 && arr.indexOf(id) === idx);
   if (!info.shipSkins.includes(info.skin)) info.shipSkins.unshift(info.skin);
@@ -703,7 +703,7 @@ function oldTrekBattleResult(session, enemy = {}) {
   const actor = session.player || {};
   const info = ensureOldTrekInfo(actor);
   const left = buildBattlePlayer(actor, actor.playerId || session.userId, actor.name || 'Player');
-  const right = buildBattlePlayer({}, enemy && enemy.dbid, enemy && enemy.name || '灵舟对手');
+  const right = buildBattlePlayer({}, enemy && enemy.dbid, enemy && enemy.name || 'Đối thủ linh chu');
   right.hp = 0;
   const validSailors = info.sailorList.map((row) => row.id).filter((id) => getSailorConfig(id).id);
   const leftId = validSailors[0] || getDefaultSailorIds(1)[0];
@@ -1382,20 +1382,20 @@ async function handleOldTrekAction(tag, params, session, msgUid) {
       const arena = toSafeInt(p.arena, 0);
       const score = arena ? getArenaScore(player) : info.totalDistance;
       data = {
-        ...buildRankPlayer({}, score, 1, p.dbid, '灵舟道友'),
+        ...buildRankPlayer({}, score, 1, p.dbid, 'Đạo hữu linh chu'),
         arena,
       };
       break;
     }
     case 7050: {
       const enemyScore = Math.max(0, getArenaScore(player) - 10);
-      const enemy = buildRankPlayer({}, enemyScore, 2, '000000000000000000000002', '灵舟对手');
+      const enemy = buildRankPlayer({}, enemyScore, 2, '000000000000000000000002', 'Đối thủ linh chu');
       info.arenaEnemy = enemy;
       data = { enemy };
       break;
     }
     case 7051: {
-      const enemy = p.enemy && typeof p.enemy === 'object' ? p.enemy : { dbid: p.enemy, name: '灵舟对手' };
+      const enemy = p.enemy && typeof p.enemy === 'object' ? p.enemy : { dbid: p.enemy, name: 'Đối thủ linh chu' };
       const battleResult = oldTrekBattleResult(session, enemy);
       const oldScore = getArenaScore(player);
       const scoreChange = 10;
@@ -1439,7 +1439,7 @@ async function handleOldTrekAction(tag, params, session, msgUid) {
       data = { logs: ensureArray(info.arenaBattleLogs) };
       break;
     case 7060: {
-      const enemy = p.enemy && typeof p.enemy === 'object' ? p.enemy : { dbid: p.enemy, name: '灵舟道友' };
+      const enemy = p.enemy && typeof p.enemy === 'object' ? p.enemy : { dbid: p.enemy, name: 'Đạo hữu linh chu' };
       const battleResult = oldTrekBattleResult(session, enemy);
       const recordId = String(Date.now());
       info.battleRecords[recordId] = battleResult;

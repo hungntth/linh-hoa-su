@@ -13,13 +13,13 @@ function errorHandler(err, req, res, _next) {
   // Mongoose 重复键错误
   if (err.code === 11000) {
     const field = Object.keys(err.keyPattern)[0];
-    return res.status(400).json({ success: false, message: `${field} 已存在` });
+    return res.status(400).json({ success: false, message: `${field} đã tồn tại` });
   }
 
   // 默认错误
   res.status(err.status || 500).json({
     success: false,
-    message: err.message || '服务器内部错误',
+    message: err.message || 'Lỗi máy chủ nội bộ',
   });
 }
 
@@ -27,7 +27,7 @@ function errorHandler(err, req, res, _next) {
  * 404 处理中间件
  */
 function notFound(req, res) {
-  res.status(404).json({ success: false, message: '接口不存在' });
+  res.status(404).json({ success: false, message: 'API không tồn tại' });
 }
 
 module.exports = { errorHandler, notFound };

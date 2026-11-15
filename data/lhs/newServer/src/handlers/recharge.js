@@ -47,10 +47,10 @@ function normalizeText(value, maxLength = 0) {
 }
 
 function buildRechargeMailPayload(product = {}, attachmentRewards = []) {
-  const productName = normalizeText(product.name, 64) || normalizeText(product.productId, 64) || '充值商品';
+  const productName = normalizeText(product.name, 64) || normalizeText(product.productId, 64) || 'Gói nạp';
   return {
-    title: normalizeText(product.mailTitle, 120) || `${productName}到账`,
-    content: normalizeText(product.mailContent, 1000) || `你购买的${productName}已到账，请领取附件奖励。`,
+    title: normalizeText(product.mailTitle, 120) || `${productName} đã được gửi`,
+    content: normalizeText(product.mailContent, 1000) || `Gói ${productName} bạn mua đã được gửi, hãy nhận phần thưởng đính kèm.`,
     attachments: mergeRewardItems(attachmentRewards),
   };
 }
@@ -200,7 +200,7 @@ async function handleRecharge(params, wsServer) {
       userId,
       title: mailPayload.title,
       content: mailPayload.content,
-      sender: '系统',
+      sender: 'Hệ thống',
       attachments: mailPayload.attachments,
     });
   }

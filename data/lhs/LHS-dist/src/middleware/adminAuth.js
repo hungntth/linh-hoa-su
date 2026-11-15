@@ -7,14 +7,14 @@ function requireAdmin(req, res, next) {
   if (!req.agent) {
     return res.status(401).json({
       success: false,
-      message: '未登录',
+      message: 'Chưa đăng nhập',
     });
   }
 
   if (!hasPermission(req.agent, 'admin')) {
     return res.status(403).json({
       success: false,
-      message: '需要管理员权限',
+      message: 'Cần quyền quản trị viên',
     });
   }
 
@@ -24,11 +24,11 @@ function requireAdmin(req, res, next) {
 function requirePermission(permission) {
   return (req, res, next) => {
     if (!req.agent) {
-      return res.status(401).json({ success: false, message: '未登录' });
+      return res.status(401).json({ success: false, message: 'Chưa đăng nhập' });
     }
 
     if (!hasPermission(req.agent, permission)) {
-      return res.status(403).json({ success: false, message: '权限不足' });
+      return res.status(403).json({ success: false, message: 'Không đủ quyền' });
     }
 
     next();

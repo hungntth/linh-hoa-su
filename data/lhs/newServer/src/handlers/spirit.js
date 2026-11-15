@@ -19,7 +19,7 @@ const { ensureEquipInfo } = require('../services/EquipService');
 // addLevelAttrs : cumulative per-level attr increments (6 dimensions)
 // addAttrs      : threshold to unlock grade advance (= 10 × addLevelAttrs)
 const DEFAULT_SPIRIT_CONFIG = {
-  24001: { id: 24001, type: 1, name: '八卦' },
+  24001: { id: 24001, type: 1, name: 'Bát Quái' },
 };
 
 const _makeGradeCfg = (grade) => {

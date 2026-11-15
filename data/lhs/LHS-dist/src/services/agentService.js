@@ -17,14 +17,14 @@ async function assertRoleFitsParent(agent, targetLevel) {
   if (!agent.parentId) return;
   const parent = await Agent.findById(agent.parentId).select('level');
   if (parent && targetLevel <= parent.level) {
-    throw createError('代理角色必须低于上级角色', 400);
+    throw createError('Vai trò đại lý phải thấp hơn vai trò cấp trên', 400);
   }
 }
 
 async function assertRoleFitsChildren(agentId, targetLevel) {
   const child = await Agent.findOne({ parentId: agentId, level: { $lte: targetLevel } }).select('_id');
   if (child) {
-    throw createError('代理角色不能高于或等于直属下级角色', 400);
+    throw createError('Vai trò đại lý không được cao hơn hoặc bằng vai trò cấp dưới trực tiếp', 400);
   }
 }
 
@@ -54,23 +54,23 @@ async function register({ username, password, phone, parentInviteCode }) {
   assertAllowedUsername(normalizedUsername);
   const inviteCode = String(parentInviteCode || '').trim().toUpperCase();
   if (!inviteCode) {
-    throw createError('必须填写上级邀请码', 400);
+    throw createError('Phải nhập mã mời của cấp trên', 400);
   }
 
   const parent = await Agent.findOne({ inviteCode });
   if (!parent) {
-    throw createError('邀请码不存在', 404);
+    throw createError('Mã mời không tồn tại', 404);
   }
   if (parent.status !== 'active') {
-    throw createError('上级代理当前不可用，无法邀请下级', 403);
+    throw createError('Đại lý cấp trên hiện không hoạt động và không thể mời cấp dưới', 403);
   }
   if (parent.permissions && parent.permissions.inviteAgent === false) {
-    throw createError('上级代理无发展下级权限', 403);
+    throw createError('Đại lý cấp trên không có quyền mời cấp dưới', 403);
   }
 
   const businessRole = getNextAgentRole(parent.businessRole || parent.level)?.key;
   if (!businessRole) {
-    throw createError('已达到最大代理层级', 400);
+    throw createError('Đã đạt cấp đại lý tối đa', 400);
   }
 
   const normalizedPhone = String(phone || '').trim();
@@ -88,7 +88,7 @@ async function register({ username, password, phone, parentInviteCode }) {
     level: parent.level + 1,
     businessRole,
     status: 'pending',
-    reviewReason: '等待上级审核',
+    reviewReason: 'Chờ cấp trên xét duyệt',
     commissionRate: normalizeCommissionRate(config.defaultCommissionRate),
     permissions: normalizePermissions({}, businessRole),
   });
@@ -107,24 +107,24 @@ async function login({ username, password }) {
   // 查找代理商
   const agent = await Agent.findOne({ username: normalizedUsername });
   if (!agent) {
-    throw createError('用户名或密码错误', 401);
+    throw createError('Tên đăng nhập hoặc mật khẩu không đúng', 401);
   }
 
   // 验证密码
   const isMatch = await agent.comparePassword(password);
   if (!isMatch) {
-    throw createError('用户名或密码错误', 401);
+    throw createError('Tên đăng nhập hoặc mật khẩu không đúng', 401);
   }
 
   // 检查状态
   if (agent.status === 'pending') {
-    throw createError('账号待上级审核', 403);
+    throw createError('Tài khoản đang chờ cấp trên xét duyệt', 403);
   }
   if (agent.status === 'rejected') {
-    throw createError(agent.reviewReason || '账号申请已被上级拒绝', 403);
+    throw createError(agent.reviewReason || 'Yêu cầu đăng ký đã bị cấp trên từ chối', 403);
   }
   if (agent.status !== 'active') {
-    throw createError('账号已被禁用', 403);
+    throw createError('Tài khoản đã bị vô hiệu hóa', 403);
   }
 
   // 生成 JWT
@@ -141,7 +141,7 @@ async function login({ username, password }) {
 async function getProfile(agentId) {
   const agent = await Agent.findById(agentId);
   if (!agent) {
-    throw new Error('代理商不存在');
+    throw new Error('Đại lý không tồn tại');
   }
   return agent;
 }
@@ -191,41 +191,41 @@ async function getPendingChildren(agentId, { page = 1, limit = 20 } = {}) {
 async function reviewChildAgent(parentAgent, childAgentId, { action, reason = '' } = {}) {
   const child = await Agent.findOne({ _id: childAgentId, parentId: parentAgent._id, status: 'pending' });
   if (!child) {
-    throw createError('待审核下级不存在或状态已变更', 404);
+    throw createError('Đại lý cấp dưới chờ xét duyệt không tồn tại hoặc đã đổi trạng thái', 404);
   }
 
   child.status = action === 'approve' ? 'active' : 'rejected';
   child.reviewedBy = parentAgent.username;
   child.reviewedAt = new Date();
-  child.reviewReason = action === 'approve' ? (reason || '审核通过') : (reason || '审核拒绝');
+  child.reviewReason = action === 'approve' ? (reason || 'Đã duyệt') : (reason || 'Đã từ chối');
   await child.save();
   return child;
 }
 
 async function updateManagedChildRole(operatorAgent, childAgentId, { businessRole } = {}) {
   if (Number(operatorAgent.level) > 1) {
-    throw createError('只有总推或总代可以调整下级层级', 403);
+    throw createError('Chỉ tổng đại lý hoặc đại lý chính mới có thể điều chỉnh cấp bậc cấp dưới', 403);
   }
   if (!AGENT_ROLE_KEYS.includes(businessRole)) {
-    throw createError('无效的代理角色', 400);
+    throw createError('Vai trò đại lý không hợp lệ', 400);
   }
 
   const managedIds = await collectManagedAgentIds(operatorAgent._id);
   if (!managedIds.includes(String(childAgentId)) || String(childAgentId) === String(operatorAgent._id)) {
-    throw createError('无权调整该下级层级', 403);
+    throw createError('Không có quyền điều chỉnh cấp bậc đại lý này', 403);
   }
 
   const child = await Agent.findById(childAgentId);
   if (!child) {
-    throw createError('下级代理不存在', 404);
+    throw createError('Đại lý cấp dưới không tồn tại', 404);
   }
 
   const role = getAgentRoleByKey(businessRole);
   if (!role) {
-    throw createError('无效的代理角色', 400);
+    throw createError('Vai trò đại lý không hợp lệ', 400);
   }
   if (role.level <= Number(operatorAgent.level)) {
-    throw createError('下级层级必须低于当前操作者层级', 400);
+    throw createError('Cấp bậc cấp dưới phải thấp hơn cấp bậc người thực hiện', 400);
   }
 
   await assertRoleFitsParent(child, role.level);
@@ -241,17 +241,17 @@ async function updateManagedChildRole(operatorAgent, childAgentId, { businessRol
 async function resetManagedChildPassword(operatorAgent, childAgentId, { password } = {}) {
   const nextPassword = String(password || '');
   if (nextPassword.length < 6) {
-    throw createError('密码至少6个字符', 400);
+    throw createError('Mật khẩu phải có ít nhất 6 ký tự', 400);
   }
 
   const managedIds = await collectManagedAgentIds(operatorAgent._id);
   if (!managedIds.includes(String(childAgentId)) || String(childAgentId) === String(operatorAgent._id)) {
-    throw createError('无权重置该代理密码', 403);
+    throw createError('Không có quyền đặt lại mật khẩu đại lý này', 403);
   }
 
   const child = await Agent.findById(childAgentId);
   if (!child) {
-    throw createError('下级代理不存在', 404);
+    throw createError('Đại lý cấp dưới không tồn tại', 404);
   }
 
   child.password = nextPassword;
@@ -265,7 +265,7 @@ async function resetManagedChildPassword(operatorAgent, childAgentId, { password
 async function getStats(agentId) {
   const agent = await Agent.findById(agentId);
   if (!agent) {
-    throw new Error('代理商不存在');
+    throw new Error('Đại lý không tồn tại');
   }
 
   // 统计下级数量
@@ -324,7 +324,7 @@ async function getGlobalStats() {
 async function getTeamTree(agentId) {
   const agent = await Agent.findById(agentId).select('-password');
   if (!agent) {
-    throw new Error('代理商不存在');
+    throw new Error('Đại lý không tồn tại');
   }
 
   // 递归获取下级

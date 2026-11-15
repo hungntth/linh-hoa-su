@@ -28,7 +28,7 @@ router.post('/apply', authenticate, sensitiveLimiter, validate(withdrawalSchema)
 
     res.json({
       success: true,
-      message: '提现申请已提交',
+      message: 'Đã gửi yêu cầu rút tiền',
       data: withdrawal,
     });
   } catch (error) {
@@ -77,7 +77,7 @@ router.put('/:id/approve', authenticate, requireAdmin, sensitiveLimiter, async (
 
     res.json({
       success: true,
-      message: '提现已审批通过',
+      message: 'Yêu cầu rút tiền đã được duyệt',
       data: withdrawal,
     });
   } catch (error) {
@@ -98,7 +98,7 @@ router.put('/:id/reject', authenticate, requireAdmin, async (req, res, next) => 
     );
     res.json({
       success: true,
-      message: '提现已拒绝',
+      message: 'Yêu cầu rút tiền đã bị từ chối',
       data: withdrawal,
     });
   } catch (error) {

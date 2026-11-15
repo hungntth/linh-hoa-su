@@ -85,7 +85,7 @@ router.post('/agents', authenticate, requireAdmin, validate(adminAgentCreateSche
       })
     );
 
-    res.json({ success: true, message: '代理创建成功', data: agent });
+    res.json({ success: true, message: 'Đã tạo đại lý', data: agent });
   } catch (error) {
     await logOperation(
       buildLogPayload(req, 'agent_create', null, 'Agent', req.body, 'failure', error.message)
@@ -114,7 +114,7 @@ router.put(
         })
       );
 
-      res.json({ success: true, message: '代理配置已更新', data: agent });
+      res.json({ success: true, message: 'Đã cập nhật cấu hình đại lý', data: agent });
     } catch (error) {
       await logOperation(
         buildLogPayload(req, 'agent_profile_update', req.params.id, 'Agent', req.body, 'failure', error.message)
@@ -147,7 +147,7 @@ router.put(
 
       res.json({
         success: true,
-        message: '状态更新成功',
+        message: 'Đã cập nhật trạng thái',
         data: agent,
       });
     } catch (error) {
@@ -194,7 +194,7 @@ router.put(
           accessPermissions: agent.accessPermissions || [],
         })
       );
-      res.json({ success: true, message: '访问角色已更新', data: agent });
+      res.json({ success: true, message: 'Đã cập nhật vai trò truy cập', data: agent });
     } catch (error) {
       await logOperation(
         buildLogPayload(req, 'agent_access_update', req.params.id, 'Agent', req.body, 'failure', error.message)
@@ -243,7 +243,7 @@ router.put(
 
       res.json({
         success: true,
-        message: '提现已审批通过',
+        message: 'Yêu cầu rút tiền đã được duyệt',
         data: withdrawal,
       });
     } catch (error) {
@@ -292,7 +292,7 @@ router.put(
 
       res.json({
         success: true,
-        message: '提现已拒绝',
+        message: 'Yêu cầu rút tiền đã bị từ chối',
         data: withdrawal,
       });
     } catch (error) {

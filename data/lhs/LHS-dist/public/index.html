@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>登录 - 灵画师分销系统</title>
+  <title>Đăng nhập - Hệ thống phân phối Linh Họa Sư</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -11,7 +11,7 @@
   <!-- 加载动画 -->
   <div id="loading">
     <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">加载中...</span>
+      <span class="visually-hidden">Đang tải...</span>
     </div>
   </div>
 
@@ -19,77 +19,77 @@
   <div class="login-container">
     <div class="login-card">
       <div class="text-center mb-4">
-        <h1 class="login-title">灵画师分销系统</h1>
-        <p class="login-subtitle">代理商管理平台</p>
+        <h1 class="login-title">Hệ thống phân phối Linh Họa Sư</h1>
+        <p class="login-subtitle">Nền tảng quản lý đại lý</p>
       </div>
 
       <div class="btn-group w-100 mb-4" role="group">
-        <button type="button" class="btn btn-primary" id="loginTab">登录</button>
-        <button type="button" class="btn btn-outline-primary" id="registerTab">注册</button>
+        <button type="button" class="btn btn-primary" id="loginTab">Đăng nhập</button>
+        <button type="button" class="btn btn-outline-primary" id="registerTab">Đăng ký</button>
       </div>
 
       <form id="loginForm">
         <div class="mb-3">
-          <label for="username" class="form-label">用户名</label>
+          <label for="username" class="form-label">Tên đăng nhập</label>
           <input 
             type="text" 
             class="form-control form-control-lg" 
             id="username" 
-            placeholder="请输入用户名"
+            placeholder="Nhập tên đăng nhập"
             required
           >
         </div>
 
         <div class="mb-4">
-          <label for="password" class="form-label">密码</label>
+          <label for="password" class="form-label">Mật khẩu</label>
           <input 
             type="password" 
             class="form-control form-control-lg" 
             id="password" 
-            placeholder="请输入密码"
+            placeholder="Nhập mật khẩu"
             required
           >
         </div>
 
         <button type="submit" class="btn btn-primary btn-lg w-100">
-          登录
+          Đăng nhập
         </button>
       </form>
 
       <div id="loggedInPanel" class="alert alert-info mt-3" style="display: none;">
         <div id="loggedInText" class="mb-2"></div>
         <div class="d-grid gap-2">
-          <button type="button" class="btn btn-primary" id="enterBackendBtn">进入后台</button>
-          <button type="button" class="btn btn-outline-secondary" id="switchAccountBtn">切换账号</button>
+          <button type="button" class="btn btn-primary" id="enterBackendBtn">Vào trang quản trị</button>
+          <button type="button" class="btn btn-outline-secondary" id="switchAccountBtn">Chuyển tài khoản</button>
         </div>
       </div>
 
       <form id="registerForm" style="display: none;">
         <div class="mb-3">
-          <label for="regUsername" class="form-label">用户名</label>
-          <input type="text" class="form-control form-control-lg" id="regUsername" placeholder="3-20位用户名" required>
+          <label for="regUsername" class="form-label">Tên đăng nhập</label>
+          <input type="text" class="form-control form-control-lg" id="regUsername" placeholder="Tên đăng nhập từ 3 đến 20 ký tự" required>
         </div>
         <div class="mb-3">
-          <label for="regPassword" class="form-label">密码</label>
-          <input type="password" class="form-control form-control-lg" id="regPassword" placeholder="至少6位密码" required>
+          <label for="regPassword" class="form-label">Mật khẩu</label>
+          <input type="password" class="form-control form-control-lg" id="regPassword" placeholder="Mật khẩu có ít nhất 6 ký tự" required>
         </div>
         <div class="mb-3">
-          <label for="regPhone" class="form-label">手机（飞机）号</label>
-          <input type="tel" class="form-control form-control-lg" id="regPhone" placeholder="选填，便于联系">
+          <label for="regPhone" class="form-label">Số điện thoại (Telegram)</label>
+          <input type="tel" class="form-control form-control-lg" id="regPhone" placeholder="Không bắt buộc, dùng để liên hệ">
         </div>
         <div class="mb-4">
-          <label for="parentInviteCode" class="form-label">邀请码</label>
-          <input type="text" class="form-control form-control-lg" id="parentInviteCode" maxlength="6" placeholder="请输入上级邀请码" required>
-          <small class="text-muted" id="inviteHint">请通过上级代理邀请链接进入，或手动填写邀请码</small>
+          <label for="parentInviteCode" class="form-label">Mã mời</label>
+          <input type="text" class="form-control form-control-lg" id="parentInviteCode" maxlength="6" placeholder="Nhập mã mời của đại lý cấp trên" required>
+          <small class="text-muted" id="inviteHint">Vui lòng truy cập bằng liên kết mời của đại lý cấp trên hoặc tự nhập mã mời</small>
         </div>
         <button type="submit" class="btn btn-success btn-lg w-100">
-          注册代理账号
+          Đăng ký tài khoản đại lý
         </button>
       </form>
 
       <div class="text-center mt-4">
         <small class="text-muted">
-          还没有账号？请联系上级代理获取邀请链接
+          Chưa có tài khoản? Hãy liên hệ đại lý cấp trên để nhận liên kết mời
         </small>
       </div>
     </div>
@@ -116,7 +116,7 @@
     if (inviteCodeFromUrl) {
       document.getElementById('parentInviteCode').value = inviteCodeFromUrl;
       document.getElementById('parentInviteCode').readOnly = true;
-      document.getElementById('inviteHint').textContent = `已识别邀请码：${inviteCodeFromUrl}`;
+      document.getElementById('inviteHint').textContent = `Đã nhận diện mã mời: ${inviteCodeFromUrl}`;
       switchAuthMode('register');
     }
 
@@ -132,7 +132,7 @@
         return;
       }
 
-      document.getElementById('loggedInText').textContent = `当前已登录：${user.username}，可直接进入对应后台。`;
+      document.getElementById('loggedInText').textContent = `Đang đăng nhập: ${user.username}, bạn có thể vào trang quản trị tương ứng.`;
       document.getElementById('loggedInPanel').style.display = '';
       document.getElementById('enterBackendBtn').onclick = () => Auth.redirectToHome(user);
       document.getElementById('switchAccountBtn').onclick = () => {
@@ -157,15 +157,15 @@
         const response = await api.login(username, password);
         
         if (response.success) {
-          showToast('登录成功！', 'success');
+          showToast('Đăng nhập thành công!', 'success');
           setTimeout(() => {
             Auth.redirectToHome(response.data.agent);
           }, 500);
         } else {
-          showToast(response.message || '登录失败', 'danger');
+          showToast(response.message || 'Đăng nhập thất bại', 'danger');
         }
       } catch (error) {
-        showToast(error.message || '登录失败，请检查用户名和密码', 'danger');
+        showToast(error.message || 'Đăng nhập thất bại, vui lòng kiểm tra tên đăng nhập và mật khẩu', 'danger');
       } finally {
         hideLoading();
       }
@@ -180,11 +180,11 @@
       const parentInviteCode = document.getElementById('parentInviteCode').value.trim().toUpperCase();
 
       if (phone && !/^1[3-9]\d{9}$/.test(phone)) {
-        showToast('手机号格式不正确', 'danger');
+        showToast('Số điện thoại không đúng định dạng', 'danger');
         return;
       }
       if (!/^[A-Za-z0-9]{6}$/.test(parentInviteCode)) {
-        showToast('邀请码必须为6位字母或数字', 'danger');
+        showToast('Mã mời phải gồm 6 chữ cái hoặc chữ số', 'danger');
         return;
       }
 
@@ -192,14 +192,14 @@
       try {
         const response = await api.registerAgent({ username, password, phone, parentInviteCode });
         if (response.success) {
-          showToast(response.message || '注册申请已提交，请等待上级审核', 'success');
+          showToast(response.message || 'Đã gửi yêu cầu đăng ký, vui lòng chờ đại lý cấp trên duyệt', 'success');
           document.getElementById('username').value = username;
           switchAuthMode('login');
         } else {
-          showToast(response.message || '注册失败', 'danger');
+          showToast(response.message || 'Đăng ký thất bại', 'danger');
         }
       } catch (error) {
-        showToast(error.message || '注册失败，请检查信息', 'danger');
+        showToast(error.message || 'Đăng ký thất bại, vui lòng kiểm tra thông tin', 'danger');
       } finally {
         hideLoading();
       }

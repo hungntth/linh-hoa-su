@@ -373,7 +373,7 @@ function buildArenaChallengeRowFromPlayer(targetPlayer, serverId) {
     playerId: show.playerId || '',
     serverId: Math.max(1, toSafeInt(serverId, 1)),
     serverName: '',
-    name: show.name || '同服道友',
+    name: show.name || 'Đạo hữu cùng máy chủ',
     level: Math.max(1, toSafeInt(show.level, 1)),
     avatar: Math.max(0, toSafeInt(show.avatar, 11300)),
     avatarUrl: show.avatarUrl || '',
@@ -447,7 +447,7 @@ function buildArenaFightOpponentShowInfo(challenge = {}, fallbackLevel = 1) {
     kungfuId: roleSelection.kungfuId,
     subJob: roleSelection.subJob,
     level: Math.max(1, toSafeInt(row.level, fallbackLevel)),
-    name: String(row.name || '武道会对手'),
+    name: String(row.name || 'Đối thủ đại hội võ đạo'),
     power: Math.max(100, toSafeInt(row.power || row.powerScore, 100)),
     stage: Math.max(1, toSafeInt(row.stage, Math.floor(Math.max(1, toSafeInt(row.level, fallbackLevel)) / 10) + 1)),
     petId: Math.max(0, toSafeInt(row.petId, 0)),
@@ -836,7 +836,7 @@ function buildDoubleTowerEnemyInfo(player, info, params = {}) {
 
   return {
     dbid: uid || `double_enemy_${Date.now() % 100000}`,
-    name: uid ? `守擂者-${uid}` : '守擂者',
+    name: uid ? `Người giữ đài-${uid}` : 'Người giữ đài',
     avatar: 11320 + (index % 5),
     avatarUrl: '',
     avatarFrame: 0,
@@ -998,7 +998,7 @@ function buildTopCombatRobotShowInfo(player, rank) {
     kungfuId: roleSelection.kungfuId,
     subJob: roleSelection.subJob,
     level,
-    name: getConfiguredRobotName(robotCfg.name, `天梯守擂者${rankSafe}`),
+    name: getConfiguredRobotName(robotCfg.name, `Người giữ đài xếp hạng${rankSafe}`),
     power,
     stage: Math.max(1, Math.floor(level / 10) + 1),
     petId: 0,
@@ -1065,7 +1065,7 @@ function toTopCombatRankBaseInfo(showInfo = {}, isSelf = false) {
   const row = ensurePlainObject(showInfo);
   return {
     dbid: row.dbid == null ? '' : String(row.dbid),
-    name: row.name || (isSelf ? 'self' : '守擂者'),
+    name: row.name || (isSelf ? 'self' : 'Người giữ đài'),
     level: Math.max(1, toSafeInt(row.level, 1)),
     avatar: Math.max(0, toSafeInt(row.avatar, 11300)),
     avatarUrl: row.avatarUrl || '',
@@ -1183,7 +1183,7 @@ function buildTopArenaRobotShowInfo(player, rank) {
     kungfuId: pickArenaRobotKungfuId(rankSafe),
     subJob: 0,
     level,
-    name: `巅峰擂主${rankSafe}`,
+    name: `Chủ đài đỉnh phong${rankSafe}`,
     power: 1200 + level * 130 + Math.max(0, TOP_ARENA_DEFAULT_RANK - rankSafe) * 5,
     stage: Math.max(1, Math.floor(level / 10) + 1),
     petId: 0,
@@ -1336,7 +1336,7 @@ function normalizeTopArenaRoomPlayer(playerRow = {}, index = 0) {
   return {
     dbid: row.dbid == null ? '' : String(row.dbid),
     serverId: Math.max(1, toSafeInt(row.serverId, 1)),
-    name: row.name || `房间选手${index + 1}`,
+    name: row.name || `Đấu thủ trong phòng${index + 1}`,
     level: Math.max(1, toSafeInt(row.level, 1)),
     avatar: Math.max(0, toSafeInt(row.avatar, 11300)),
     avatarUrl: row.avatarUrl || '',
@@ -1594,7 +1594,7 @@ async function performArenaFight(params, session, msgUid, options = {}) {
       {
         id: Math.max(1, toSafeInt(arenaOpponentShowInfo.kungfuId, 4)),
         dbid: enemyDbid,
-        name: String((selectedChallenge && selectedChallenge.name) || '武道会对手'),
+        name: String((selectedChallenge && selectedChallenge.name) || 'Đối thủ đại hội võ đạo'),
         type: 1,
         side: 2,
         camp: 2,
@@ -1752,7 +1752,7 @@ async function handleTopArenaStartFight(params, session, msgUid) {
       {
         id: Math.max(1, toSafeInt(opponentShow.kungfuId, 4)),
         dbid: enemyid,
-        name: String(opponentShow.name || '巅峰竞技场对手'),
+        name: String(opponentShow.name || 'Đối thủ đấu trường đỉnh phong'),
         type: 1,
         side: 2,
         camp: 2,
@@ -2176,7 +2176,7 @@ async function handleTopCombatStartFight(params, session, msgUid) {
       {
         id: Math.max(1, toSafeInt(opponentShow.kungfuId, 1)),
         dbid: enemyid,
-        name: String(opponentShow.name || `天梯守擂者${targetRank}`),
+        name: String(opponentShow.name || `Người giữ đài xếp hạng${targetRank}`),
         type: 1,
         side: 2,
         camp: 2,
@@ -2681,7 +2681,7 @@ async function handleTopArenaCrossPlayerDetail(params, session, msgUid) {
     : {
       ...player,
       playerId: targetId,
-      name: `跨服玩家${targetId.slice(-4)}`,
+      name: `Người chơi liên máy chủ${targetId.slice(-4)}`,
       level: Math.max(1, toSafeInt(player.level, 1)),
     };
 
@@ -2842,7 +2842,7 @@ async function handleCrossArenaChallengeList(_params, session, msgUid) {
 // Generate challenge opponent list
 function generateOpponents(player, options = {}) {
   const level = player ? player.level || 1 : 1;
-  const names = ['剑修·青云', '法修·紫霄', '体修·铁拳', '器修·灵匠', '丹修·妙手'];
+  const names = ['Kiếm tu · Thanh Vân', 'Pháp tu · Tử Tiêu', 'Thể tu · Thiết Quyền', 'Khí tu · Linh Tượng', 'Đan tu · Diệu Thủ'];
   const robotCfgMap = getArenaRobotConfigMap(!!options.crossArena);
   const robotIds = Object.keys(robotCfgMap)
     .map((key) => Math.max(0, toSafeInt(key, 0)))

@@ -233,7 +233,7 @@ async function handleMailClaim(params, session, msgUid) {
       msgUid,
       data: {
         result: -2,
-        msg: `角色达到${needLevel}级后可领取`,
+        msg: `Nhân vật đạt cấp ${needLevel} mới có thể nhận`,
         minClaimLevel: needLevel,
         ids,
         handles: ids,
@@ -275,8 +275,8 @@ async function handleMailClaim(params, session, msgUid) {
   if (rewardItems.length > 0) {
     messageService.pushPlayerNotice(player, {
       type: 'mail',
-      title: '邮件奖励',
-      content: `领取了${ids.length}封邮件奖励`,
+      title: 'Phần thưởng thư',
+      content: `Đã nhận phần thưởng từ ${ids.length} thư`,
     });
   }
 

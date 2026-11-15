@@ -192,7 +192,7 @@ function buildRobotRoomPlayerData(index, matchInfo, opts = {}) {
     playerId: `horse_race_robot_${safeIndex}`,
     playerid: `horse_race_robot_${safeIndex}`,
     dbid: `horse_race_robot_${safeIndex}`,
-    name: `灵舟道友${safeIndex}`,
+    name: `Đạo hữu linh chu ${safeIndex}`,
     avatar: 11300 + (safeIndex % 8),
     avatarFrame: -1,
     avatarUrl: '',

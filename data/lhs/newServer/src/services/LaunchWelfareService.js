@@ -13,7 +13,7 @@ const LAUNCH_WELFARE_ATTACHMENTS_7001 = [
 	{ id: 1003, count: 300 },
 	{ id: 1002, count: 300 },
 ];
-const LAUNCH_WELFARE_CONTENT = '尊敬的玩家，您的上线福利已准备好。请记得领取到账哦！';
+const LAUNCH_WELFARE_CONTENT = 'Chào bạn, quà đăng nhập của bạn đã sẵn sàng. Hãy nhớ nhận quà nhé!';
 
 function ensurePlainObject(value) {
   return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
@@ -36,8 +36,8 @@ async function ensureLaunchWelfareMail(player = {}, userId = '') {
     userId: safeUserId,
     eventKey: LAUNCH_WELFARE_EVENT_KEY,
     minClaimLevel: LAUNCH_WELFARE_MIN_LEVEL,
-    title: '上线福利',
-    sender: '系统',
+    title: 'Quà đăng nhập',
+    sender: 'Hệ thống',
     content: LAUNCH_WELFARE_CONTENT,
     text: LAUNCH_WELFARE_CONTENT,
     attachments: LAUNCH_WELFARE_ATTACHMENTS_7001,

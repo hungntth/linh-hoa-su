@@ -1002,7 +1002,7 @@ function buildSyntheticEnemyGuild(myGuildId = 0) {
   const enemyId = Math.max(100000, toSafeInt(myGuildId, 0) + 90000);
   return {
     guildId: enemyId,
-    name: '敌方仙盟',
+    name: 'Tiên minh đối phương',
     level: 1,
     exp: 0,
     icon: 0,
@@ -1024,7 +1024,7 @@ function buildSyntheticPlayerGuild(player = {}, guildId = 0) {
   );
   return {
     guildId: safeGuildId,
-    name: toSafeString(guildInfo.guildName) || `仙盟${safeGuildId}`,
+    name: toSafeString(guildInfo.guildName) || `Tiên minh ${safeGuildId}`,
     level: 1,
     exp: 0,
     icon: 0,

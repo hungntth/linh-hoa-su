@@ -1,18 +1,7 @@
 const { Schema, model } = require('mongoose');
 
 const DEFAULT_SERVER_ROWS = Object.freeze([
-  { pageId: 1, pageName: '风起长安', serverId: 1001, serverName: '长安一区', isNew: false, isRecommend: true },
-  { pageId: 1, pageName: '风起长安', serverId: 1002, serverName: '长安二区', isNew: false, isRecommend: false },
-  { pageId: 1, pageName: '风起长安', serverId: 1003, serverName: '长安三区', isNew: true, isRecommend: false },
-  { pageId: 2, pageName: '剑指苍穹', serverId: 2001, serverName: '苍穹一区', isNew: false, isRecommend: true },
-  { pageId: 2, pageName: '剑指苍穹', serverId: 2002, serverName: '苍穹二区', isNew: true, isRecommend: false },
-  { pageId: 3, pageName: '画境仙踪', serverId: 3001, serverName: '仙踪一区', isNew: false, isRecommend: true },
-  { pageId: 3, pageName: '画境仙踪', serverId: 3002, serverName: '仙踪二区', isNew: true, isRecommend: true },
-  { pageId: 4, pageName: '九州烽火', serverId: 4001, serverName: '烽火一区', isNew: false, isRecommend: true },
-  { pageId: 4, pageName: '九州烽火', serverId: 4002, serverName: '烽火二区', isNew: false, isRecommend: false },
-  { pageId: 4, pageName: '九州烽火', serverId: 4003, serverName: '烽火三区', isNew: true, isRecommend: false },
-  { pageId: 5, pageName: '云梦泽界', serverId: 5001, serverName: '云梦一区', isNew: true, isRecommend: true },
-  { pageId: 5, pageName: '云梦泽界', serverId: 5002, serverName: '云梦二区', isNew: true, isRecommend: false },
+  { pageId: 1, pageName: 'Kiếm Chỉ Thương Khung', serverId: 1001, serverName: 'Thương Khung', isNew: false, isRecommend: true },
 ]);
 
 function getDefaultRechargeArea() {

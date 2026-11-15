@@ -90,7 +90,7 @@ function buildShopItems(stage = 1) {
 function buildEnemyData(player, stage = 1) {
   return {
     dbid: `tf_enemy_${Math.max(1, toSafeInt(stage, 1))}`,
-    name: `试炼对手${Math.max(1, toSafeInt(stage, 1))}`,
+    name: `Đối thủ thử luyện ${Math.max(1, toSafeInt(stage, 1))}`,
     avatar: Math.max(0, toSafeInt(player && player.avatar, 11305)),
     avatarFrame: Math.max(-1, toSafeInt(player && player.avatarFrame, -1)),
     level: Math.max(1, toSafeInt(player && player.level, 1)),
@@ -177,7 +177,7 @@ function buildTopRankList(player, info) {
   for (let i = 1; i <= 9; i++) {
     rows.push({
       dbid: `tf_rank_${i}`,
-      name: `巅峰斗士${i}`,
+      name: `Đấu sĩ đỉnh phong ${i}`,
       avatar: 11300 + (i % 8),
       score: Math.max(0, toSafeInt(info.score, 0) + 300 - i * 20),
     });

@@ -221,7 +221,7 @@ function normalizeFarmLogEntry(entry) {
   const rawPlayer = entry.playerinfo && typeof entry.playerinfo === 'object' ? entry.playerinfo : {};
   const playerinfo = {
     dbid: String(rawPlayer.dbid || ''),
-    name: String(rawPlayer.name || '道友'),
+    name: String(rawPlayer.name || 'Đạo hữu'),
     level: Math.max(1, toSafeInt(rawPlayer.level, 1)),
     avatar: Math.max(0, toSafeInt(rawPlayer.avatar, 0)),
     avatarUrl: String(rawPlayer.avatarUrl || rawPlayer.avatarurl || ''),
@@ -243,7 +243,7 @@ function buildFarmBattlePlayerInfo(player = {}, fallback = {}) {
   const level = Math.max(1, toSafeInt(source.level, toSafeInt(fallbackInfo.level, toSafeInt(fallbackInfo.lv, 1))));
   return {
     dbid: String(source.playerId || source.userId || fallbackInfo.dbid || ''),
-    name: String(source.name || fallbackInfo.name || '道友'),
+    name: String(source.name || fallbackInfo.name || 'Đạo hữu'),
     avatar: Math.max(0, toSafeInt(roleInfo.avatar, toSafeInt(source.avatar, toSafeInt(fallbackInfo.avatar, 0)))),
     avatarUrl: String(source.avatarUrl || fallbackInfo.avatarUrl || fallbackInfo.avatarurl || ''),
     lv: level,
@@ -265,7 +265,7 @@ function normalizeFarmFightLogEntry(entry, selfPlayer = {}) {
     : buildFarmBattlePlayerInfo(selfPlayer);
   const otherInfo = rawPlayerInfos[1]
     ? normalizeFarmBattlePlayerInfo(rawPlayerInfos[1])
-    : normalizeFarmBattlePlayerInfo(entry.playerinfo || { dbid: 'robber', name: '道友' });
+    : normalizeFarmBattlePlayerInfo(entry.playerinfo || { dbid: 'robber', name: 'Đạo hữu' });
 
   return {
     ...entry,
@@ -1154,7 +1154,7 @@ function buildFarmFightShowInfo(player = {}, fallback = {}) {
     kungfuId,
     subJob: Math.max(0, toSafeInt(roleInfo.subJob, toSafeInt(fallback.subJob, 0))),
     level,
-    name: String(player.name || fallback.name || '道友'),
+    name: String(player.name || fallback.name || 'Đạo hữu'),
     power: Math.max(0, toSafeInt(player.power, toSafeInt(player.powerScore, toSafeInt(fallback.power, level * 100)))),
     stage: Math.max(1, toSafeInt(roleInfo.stage, toSafeInt(roleInfo.stageId, 1))),
     petId: 0,
@@ -1587,7 +1587,7 @@ async function handlePlantLevelOrRob(params, session, msgUid) {
       type: 1,
       index,
       count,
-      playerinfo: { dbid: targetDbid || selfDbid, name: targetPlayer.name || '道友', level: targetPlayer.level || 1, avatar: targetPlayer.avatar || 0, avatarUrl: targetPlayer.avatarUrl || '' },
+      playerinfo: { dbid: targetDbid || selfDbid, name: targetPlayer.name || 'Đạo hữu', level: targetPlayer.level || 1, avatar: targetPlayer.avatar || 0, avatarUrl: targetPlayer.avatarUrl || '' },
       finishtime: robInfo.finishtime,
       time: getNowSeconds(),
       isWin: true,

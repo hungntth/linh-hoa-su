@@ -70,7 +70,7 @@ class API {
 
     if (!response.ok) {
       const message = typeof payload === 'object' ? payload.message : payload;
-      throw new Error(message || '请求失败');
+      throw new Error(message || 'Yêu cầu thất bại');
     }
 
     return payload;
@@ -106,7 +106,7 @@ class API {
     });
 
     if (!response.ok) {
-      let message = '下载失败';
+      let message = 'Tải xuống thất bại';
       try {
         const payload = await response.json();
         message = payload.message || message;

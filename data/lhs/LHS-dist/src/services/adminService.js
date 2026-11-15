@@ -162,14 +162,14 @@ async function assertRoleFitsParent(agent, targetLevel) {
   if (!agent.parentId) return;
   const parent = await Agent.findById(agent.parentId).select('level username');
   if (parent && targetLevel <= parent.level) {
-    throw new Error('代理角色必须低于上级角色');
+    throw new Error('Vai trò đại lý phải thấp hơn vai trò cấp trên');
   }
 }
 
 async function assertRoleFitsChildren(agentId, targetLevel) {
   const child = await Agent.findOne({ parentId: agentId, level: { $lte: targetLevel } }).select('username');
   if (child) {
-    throw new Error('代理角色不能高于或等于直属下级角色');
+    throw new Error('Vai trò đại lý không được cao hơn hoặc bằng vai trò cấp dưới trực tiếp');
   }
 }
 
@@ -188,19 +188,19 @@ async function createAgent({
 
   const role = getAgentRoleByKey(businessRole);
   if (!role) {
-    throw new Error('无效的代理角色');
+    throw new Error('Vai trò đại lý không hợp lệ');
   }
 
   let parent = null;
   if (parentInviteCode) {
     parent = await Agent.findOne({ inviteCode: parentInviteCode });
-    if (!parent) throw new Error('上级邀请码不存在');
-    if (parent.status !== 'active') throw new Error('上级代理已被禁用');
+    if (!parent) throw new Error('Mã mời của cấp trên không tồn tại');
+    if (parent.status !== 'active') throw new Error('Đại lý cấp trên đã bị vô hiệu hóa');
     if (role.level !== parent.level + 1) {
-      throw new Error('代理角色必须是上级角色的下一层级');
+      throw new Error('Vai trò đại lý phải ở cấp ngay dưới vai trò cấp trên');
     }
   } else if (role.level !== 0) {
-    throw new Error('非总推角色必须填写上级邀请码');
+    throw new Error('Vai trò không phải tổng đại lý phải nhập mã mời của cấp trên');
   }
 
   const inviteCode = await generateUniqueInviteCode();
@@ -225,13 +225,13 @@ async function createAgent({
 async function updateAgentProfile(agentId, { businessRole, commissionRate, permissions } = {}) {
   const agent = await Agent.findById(agentId);
   if (!agent) {
-    throw new Error('代理商不存在');
+    throw new Error('Đại lý không tồn tại');
   }
 
   let nextRoleKey = agent.businessRole || getAgentRoleByLevel(agent.level).key;
   if (businessRole !== undefined) {
     if (!AGENT_ROLE_KEYS.includes(businessRole)) {
-      throw new Error('无效的代理角色');
+      throw new Error('Vai trò đại lý không hợp lệ');
     }
     nextRoleKey = businessRole;
     const role = getAgentRoleByKey(nextRoleKey);
@@ -261,11 +261,11 @@ async function updateAgentProfile(agentId, { businessRole, commissionRate, permi
 async function updateAgentStatus(agentId, status) {
   const agent = await Agent.findById(agentId);
   if (!agent) {
-    throw new Error('代理商不存在');
+    throw new Error('Đại lý không tồn tại');
   }
 
   if (!['active', 'suspended', 'banned'].includes(status)) {
-    throw new Error('无效的状态');
+    throw new Error('Trạng thái không hợp lệ');
   }
 
   agent.status = status;
@@ -289,23 +289,23 @@ async function getAccessRoles() {
 
 async function updateAgentAccess(operator, agentId, { role, accessPermissions = [] } = {}) {
   if (!['root', 'admin', 'agent'].includes(role)) {
-    throw createError('无效的访问角色');
+    throw createError('Vai trò truy cập không hợp lệ');
   }
 
   const target = await Agent.findById(agentId);
   if (!target) {
-    throw createError('账号不存在', 404);
+    throw createError('Tài khoản không tồn tại', 404);
   }
 
   const operatorIsRoot = hasPermission(operator, 'root');
   const targetIsRoot = target.role === 'root';
   if (!operatorIsRoot && (role === 'root' || targetIsRoot)) {
-    throw createError('只有 root 权限可以授予或变更 root 角色', 403);
+    throw createError('Chỉ người có quyền root mới có thể cấp hoặc thay đổi vai trò root', 403);
   }
 
   const nextPermissions = uniquePermissions(accessPermissions).filter((key) => ALL_PERMISSION_KEYS.includes(key));
   if (!operatorIsRoot && nextPermissions.includes('root')) {
-    throw createError('只有 root 权限可以授予 root 权限', 403);
+    throw createError('Chỉ người có quyền root mới có thể cấp quyền root', 403);
   }
 
   target.role = role;

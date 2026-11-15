@@ -137,7 +137,7 @@ function buildIslandSummary(player, idx = 0, overrides = {}) {
   const row = ensurePlainObject(overrides);
   return {
     dbid: row.dbid == null ? String((player && player.playerId) || `island_${idx}`) : String(row.dbid),
-    name: row.name || (player && player.name) || `群岛玩家${idx + 1}`,
+    name: row.name || (player && player.name) || `Người chơi quần đảo ${idx + 1}`,
     level: Math.max(1, toSafeInt(row.level, toSafeInt(player && player.level, 1))),
     avatar: Math.max(0, toSafeInt(row.avatar, toSafeInt(player && player.avatar, 11300))),
     avatarFrame: Math.max(-1, toSafeInt(row.avatarFrame, toSafeInt(player && player.avatarFrame, -1))),
@@ -307,7 +307,7 @@ function buildIslandPlayerRankList(player, info) {
   for (let i = 1; i <= 9; i++) {
     rows.push(buildIslandSummary(player, i, {
       dbid: `island_rank_${i}`,
-      name: `群岛侠客${i}`,
+      name: `Hiệp khách quần đảo ${i}`,
       camp: ((i + info.camp) % 4) + 1,
       credit: Math.max(0, info.campInfo.exp + 200 - i * 12),
       power: 1200 + i * 80,
@@ -466,7 +466,7 @@ async function handleIslandUseWood(params, session, msgUid) {
   const item = Math.max(0, toSafeInt(params && params.item, 0));
   const gain = Math.max(10, item * 5 || 10);
   info.poolValue += gain;
-  const record = buildIslandRecord(info, 1, { desc: `使用木材道具${item}` });
+  const record = buildIslandRecord(info, 1, { desc: `Sử dụng vật phẩm gỗ ${item}` });
 
   await playerService.savePlayer(session.userId, player);
   return {
@@ -503,7 +503,7 @@ async function handleIslandCollectMine(_params, session, msgUid) {
   Object.keys(info.campInfo.mines).forEach((key) => {
     info.campInfo.mines[key] = 0;
   });
-  buildIslandRecord(info, 2, { desc: '采集矿脉', rewards });
+  buildIslandRecord(info, 2, { desc: 'Khai thác mỏ', rewards });
 
   await playerService.savePlayer(session.userId, player);
   return withRewardSync(player, beforeSnapshot, {
@@ -660,7 +660,7 @@ async function handleIslandAtk(params, session, msgUid) {
 
   const home = ensureBuildingDetail(info, info.homeId);
   home.battleEndTime = Math.floor(Date.now() / 1000) + 60;
-  buildIslandRecord(info, 3, { desc: `进攻目标 ${targetId || monsterId}${isAuto ? ' 自动' : ''}` });
+  buildIslandRecord(info, 3, { desc: `Tấn công mục tiêu ${targetId || monsterId}${isAuto ? ' tự động' : ''}` });
 
   await playerService.savePlayer(session.userId, player);
   if (targetId && typeof playerService.findByDbidOrPlayerId === 'function') {

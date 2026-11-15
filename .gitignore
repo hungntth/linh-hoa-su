@@ -18,3 +18,13 @@ www/server/
 www/wwwroot/game/local_boot_check.png
 www/wwwroot/game/local_proxy_boot.png
 www/wwwroot/game/ht/gm/player.txt
+
+# Bản sao cũ tại VM; client đang dùng www/wwwroot/game.
+# File cấu hình đã được theo dõi trong thư mục này vẫn nằm trong Git.
+/data/lhs/update/
+/data/lhs/js/
+/data/lhs/admin-users.html
+/data/lhs/configMap,json
+/data/lhs/index.html
+/data/lhs/register.html
+/PHUC-HOI.md

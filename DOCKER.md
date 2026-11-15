@@ -37,4 +37,3 @@ Trong môi trường local, đăng ký không yêu cầu mã mời. Có thể d�
 Chạy `./setup-docker.ps1` trong PowerShell để tạo cấu hình local từ các file mẫu, sau đó chạy `docker compose up -d --build`. Lệnh không ghi đè cấu hình đã có. Bản clone tạo server game mặc định, Redis trống và schema CDK; dữ liệu người dùng và khóa thật không được đưa lên Git. Để khôi phục dữ liệu riêng, đặt `mongodump/`, `mysql-cdk.sql` và `redis-dump.rdb` vào `docker/seed/` trước khi khởi tạo volume lần đầu. Các file đó nằm trong `.gitignore`.
 
 Để kiểm tra trên bản cài thử, chạy `docker compose exec -T game node scripts/test-clean-install.js`. Lệnh tạo một tài khoản thử trong database đang dùng; chỉ chạy ở môi trường thử nghiệm.
-

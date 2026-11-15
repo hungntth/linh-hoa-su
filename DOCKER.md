@@ -5,6 +5,7 @@ Yêu cầu Docker Desktop chạy Linux containers. Toàn bộ dịch vụ chạy
 Trong PowerShell tại thư mục dự án:
 
 ```powershell
+.\setup-docker.ps1
 docker compose up -d --build
 docker compose ps
 ```

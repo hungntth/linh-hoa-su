@@ -9,5 +9,9 @@ foreach ($file in $files) {
         Copy-Item -LiteralPath $file.Source -Destination $file.Target
     }
 }
+$phpTarget = 'www/wwwroot/game/ht/config/config.php'
+if (-not (Test-Path -LiteralPath $phpTarget)) {
+    Copy-Item -LiteralPath 'docker/php-config.php' -Destination $phpTarget
+}
 New-Item -ItemType Directory -Force -Path 'docker/seed' | Out-Null
 Write-Output 'Docker configuration ready. Run: docker compose up -d --build'

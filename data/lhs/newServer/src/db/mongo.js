@@ -32,17 +32,26 @@ mongoose.set('bufferTimeoutMS', BUFFER_TIMEOUT_MS);
  */
 async function connect(uri) {
   const connUri = uri || DEFAULT_URI;
-  try {
-    await mongoose.connect(connUri, {
-      serverSelectionTimeoutMS: SERVER_SELECTION_TIMEOUT_MS,
-      connectTimeoutMS: CONNECT_TIMEOUT_MS,
-      socketTimeoutMS: SOCKET_TIMEOUT_MS,
-    });
-    logger.info(`[MongoDB] 已连接: ${redactMongoUri(connUri)}`);
-    return mongoose.connection;
-  } catch (err) {
-    logger.error(`[MongoDB] 连接失败: ${err.message}`);
-    throw err;
+  // Retry so the server waits for MongoDB (e.g. Docker starting containers in parallel) instead of exiting.
+  const maxAttempts = readPositiveInt('MONGO_CONNECT_RETRIES', 1);
+  const retryDelayMs = readPositiveInt('MONGO_CONNECT_RETRY_DELAY_MS', 2000, 100);
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      await mongoose.connect(connUri, {
+        serverSelectionTimeoutMS: SERVER_SELECTION_TIMEOUT_MS,
+        connectTimeoutMS: CONNECT_TIMEOUT_MS,
+        socketTimeoutMS: SOCKET_TIMEOUT_MS,
+      });
+      logger.info(`[MongoDB] 已连接: ${redactMongoUri(connUri)}`);
+      return mongoose.connection;
+    } catch (err) {
+      if (attempt >= maxAttempts) {
+        logger.error(`[MongoDB] 连接失败: ${err.message}`);
+        throw err;
+      }
+      logger.warn(`[MongoDB] 连接失败 (${attempt}/${maxAttempts}), ${retryDelayMs}ms 后重试: ${err.message}`);
+      await new Promise((resolve) => setTimeout(resolve, retryDelayMs));
+    }
   }
 }
 

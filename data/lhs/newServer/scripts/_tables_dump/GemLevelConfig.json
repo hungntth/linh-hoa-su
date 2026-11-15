@@ -1,0 +1,945 @@
+{
+  "_table": "GemLevelConfig",
+  "_rows": 48,
+  "_type": "object",
+  "_firstKeys": "id,name,level,synthesisLevel,type,synthesisValue,baseAttrs,extraAttrs,score",
+  "_sample": [
+    {
+      "25001": {
+        "id": 25001,
+        "name": 25001,
+        "level": 1,
+        "synthesisLevel": 2,
+        "type": 1,
+        "synthesisValue": 3,
+        "baseAttrs": {
+          "1": 200
+        },
+        "extraAttrs": [],
+        "score": 1
+      }
+    },
+    {
+      "25002": {
+        "id": 25002,
+        "name": 25002,
+        "level": 1,
+        "synthesisLevel": 2,
+        "type": 2,
+        "synthesisValue": 3,
+        "baseAttrs": {
+          "2": 20
+        },
+        "extraAttrs": [],
+        "score": 1
+      }
+    },
+    {
+      "25003": {
+        "id": 25003,
+        "name": 25003,
+        "level": 1,
+        "synthesisLevel": 2,
+        "type": 3,
+        "synthesisValue": 3,
+        "baseAttrs": {
+          "3": 20
+        },
+        "extraAttrs": [],
+        "score": 1
+      }
+    }
+  ],
+  "data": {
+    "25001": {
+      "id": 25001,
+      "name": 25001,
+      "level": 1,
+      "synthesisLevel": 2,
+      "type": 1,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "1": 200
+      },
+      "extraAttrs": [],
+      "score": 1
+    },
+    "25002": {
+      "id": 25002,
+      "name": 25002,
+      "level": 1,
+      "synthesisLevel": 2,
+      "type": 2,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "2": 20
+      },
+      "extraAttrs": [],
+      "score": 1
+    },
+    "25003": {
+      "id": 25003,
+      "name": 25003,
+      "level": 1,
+      "synthesisLevel": 2,
+      "type": 3,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "3": 20
+      },
+      "extraAttrs": [],
+      "score": 1
+    },
+    "25004": {
+      "id": 25004,
+      "name": 25004,
+      "level": 1,
+      "synthesisLevel": 2,
+      "type": 4,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "4": 10
+      },
+      "extraAttrs": [],
+      "score": 1
+    },
+    "25011": {
+      "id": 25011,
+      "name": 25011,
+      "level": 2,
+      "synthesisLevel": 3,
+      "type": 1,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "1": 400
+      },
+      "extraAttrs": {
+        "103": 65
+      },
+      "score": 3
+    },
+    "25012": {
+      "id": 25012,
+      "name": 25012,
+      "level": 2,
+      "synthesisLevel": 3,
+      "type": 2,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "2": 40
+      },
+      "extraAttrs": {
+        "105": 65
+      },
+      "score": 3
+    },
+    "25013": {
+      "id": 25013,
+      "name": 25013,
+      "level": 2,
+      "synthesisLevel": 3,
+      "type": 3,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "3": 40
+      },
+      "extraAttrs": {
+        "104": 65
+      },
+      "score": 3
+    },
+    "25014": {
+      "id": 25014,
+      "name": 25014,
+      "level": 2,
+      "synthesisLevel": 3,
+      "type": 4,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "4": 20
+      },
+      "extraAttrs": {
+        "106": 65
+      },
+      "score": 3
+    },
+    "25021": {
+      "id": 25021,
+      "name": 25021,
+      "level": 3,
+      "synthesisLevel": 4,
+      "type": 1,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "1": 800
+      },
+      "extraAttrs": {
+        "103": 130
+      },
+      "score": 9
+    },
+    "25022": {
+      "id": 25022,
+      "name": 25022,
+      "level": 3,
+      "synthesisLevel": 4,
+      "type": 2,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "2": 80
+      },
+      "extraAttrs": {
+        "105": 130
+      },
+      "score": 9
+    },
+    "25023": {
+      "id": 25023,
+      "name": 25023,
+      "level": 3,
+      "synthesisLevel": 4,
+      "type": 3,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "3": 80
+      },
+      "extraAttrs": {
+        "104": 130
+      },
+      "score": 9
+    },
+    "25024": {
+      "id": 25024,
+      "name": 25024,
+      "level": 3,
+      "synthesisLevel": 4,
+      "type": 4,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "4": 40
+      },
+      "extraAttrs": {
+        "106": 130
+      },
+      "score": 9
+    },
+    "25031": {
+      "id": 25031,
+      "name": 25031,
+      "level": 4,
+      "synthesisLevel": 5,
+      "type": 1,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "1": 1600
+      },
+      "extraAttrs": {
+        "103": 195,
+        "155": 195
+      },
+      "score": 27
+    },
+    "25032": {
+      "id": 25032,
+      "name": 25032,
+      "level": 4,
+      "synthesisLevel": 5,
+      "type": 2,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "2": 160
+      },
+      "extraAttrs": {
+        "105": 195,
+        "154": 195
+      },
+      "score": 27
+    },
+    "25033": {
+      "id": 25033,
+      "name": 25033,
+      "level": 4,
+      "synthesisLevel": 5,
+      "type": 3,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "3": 160
+      },
+      "extraAttrs": {
+        "102": 195,
+        "104": 195
+      },
+      "score": 27
+    },
+    "25034": {
+      "id": 25034,
+      "name": 25034,
+      "level": 4,
+      "synthesisLevel": 5,
+      "type": 4,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "4": 80
+      },
+      "extraAttrs": {
+        "101": 195,
+        "106": 195
+      },
+      "score": 27
+    },
+    "25041": {
+      "id": 25041,
+      "name": 25041,
+      "level": 5,
+      "synthesisLevel": 6,
+      "type": 1,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "1": 3200
+      },
+      "extraAttrs": {
+        "103": 260,
+        "155": 260
+      },
+      "score": 81
+    },
+    "25042": {
+      "id": 25042,
+      "name": 25042,
+      "level": 5,
+      "synthesisLevel": 6,
+      "type": 2,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "2": 320
+      },
+      "extraAttrs": {
+        "105": 260,
+        "154": 260
+      },
+      "score": 81
+    },
+    "25043": {
+      "id": 25043,
+      "name": 25043,
+      "level": 5,
+      "synthesisLevel": 6,
+      "type": 3,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "3": 320
+      },
+      "extraAttrs": {
+        "102": 260,
+        "104": 260
+      },
+      "score": 81
+    },
+    "25044": {
+      "id": 25044,
+      "name": 25044,
+      "level": 5,
+      "synthesisLevel": 6,
+      "type": 4,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "4": 160
+      },
+      "extraAttrs": {
+        "101": 260,
+        "106": 260
+      },
+      "score": 81
+    },
+    "25051": {
+      "id": 25051,
+      "name": 25051,
+      "level": 6,
+      "synthesisLevel": 0,
+      "type": 1,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "1": 6400
+      },
+      "extraAttrs": {
+        "103": 325,
+        "155": 325,
+        "156": 325
+      },
+      "score": 243
+    },
+    "25052": {
+      "id": 25052,
+      "name": 25052,
+      "level": 6,
+      "synthesisLevel": 0,
+      "type": 2,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "2": 640
+      },
+      "extraAttrs": {
+        "105": 325,
+        "153": 325,
+        "154": 325
+      },
+      "score": 243
+    },
+    "25053": {
+      "id": 25053,
+      "name": 25053,
+      "level": 6,
+      "synthesisLevel": 0,
+      "type": 3,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "3": 640
+      },
+      "extraAttrs": {
+        "102": 325,
+        "104": 325,
+        "151": 325
+      },
+      "score": 243
+    },
+    "25054": {
+      "id": 25054,
+      "name": 25054,
+      "level": 6,
+      "synthesisLevel": 0,
+      "type": 4,
+      "synthesisValue": 3,
+      "baseAttrs": {
+        "4": 320
+      },
+      "extraAttrs": {
+        "101": 325,
+        "106": 325,
+        "152": 325
+      },
+      "score": 243
+    },
+    "25061": {
+      "id": 25061,
+      "name": 25061,
+      "level": 7,
+      "synthesisLevel": 0,
+      "type": 5,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "1": 16000,
+        "2": 1600
+      },
+      "extraAttrs": {
+        "103": 390,
+        "105": 390,
+        "153": 390,
+        "154": 390,
+        "155": 390,
+        "156": 390
+      },
+      "score": 972
+    },
+    "25062": {
+      "id": 25062,
+      "name": 25062,
+      "level": 7,
+      "synthesisLevel": 0,
+      "type": 6,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "1": 16000,
+        "3": 1600
+      },
+      "extraAttrs": {
+        "102": 390,
+        "103": 390,
+        "104": 390,
+        "151": 390,
+        "155": 390,
+        "156": 390
+      },
+      "score": 972
+    },
+    "25063": {
+      "id": 25063,
+      "name": 25063,
+      "level": 7,
+      "synthesisLevel": 0,
+      "type": 7,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "1": 16000,
+        "4": 800
+      },
+      "extraAttrs": {
+        "101": 390,
+        "103": 390,
+        "106": 390,
+        "152": 390,
+        "155": 390,
+        "156": 390
+      },
+      "score": 972
+    },
+    "25064": {
+      "id": 25064,
+      "name": 25064,
+      "level": 7,
+      "synthesisLevel": 0,
+      "type": 8,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "2": 1600,
+        "3": 1600
+      },
+      "extraAttrs": {
+        "102": 390,
+        "104": 390,
+        "105": 390,
+        "151": 390,
+        "153": 390,
+        "154": 390
+      },
+      "score": 972
+    },
+    "25065": {
+      "id": 25065,
+      "name": 25065,
+      "level": 7,
+      "synthesisLevel": 0,
+      "type": 9,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "2": 1600,
+        "4": 800
+      },
+      "extraAttrs": {
+        "101": 390,
+        "105": 390,
+        "106": 390,
+        "152": 390,
+        "153": 390,
+        "154": 390
+      },
+      "score": 972
+    },
+    "25066": {
+      "id": 25066,
+      "name": 25066,
+      "level": 7,
+      "synthesisLevel": 0,
+      "type": 10,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "3": 1600,
+        "4": 800
+      },
+      "extraAttrs": {
+        "101": 390,
+        "102": 390,
+        "104": 390,
+        "106": 390,
+        "151": 390,
+        "152": 390
+      },
+      "score": 972
+    },
+    "25071": {
+      "id": 25071,
+      "name": 25071,
+      "level": 8,
+      "synthesisLevel": 0,
+      "type": 11,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "1": 32000,
+        "2": 3200
+      },
+      "extraAttrs": {
+        "103": 455,
+        "105": 455,
+        "153": 455,
+        "154": 455,
+        "155": 455,
+        "156": 455
+      },
+      "score": 2916
+    },
+    "25072": {
+      "id": 25072,
+      "name": 25072,
+      "level": 8,
+      "synthesisLevel": 0,
+      "type": 12,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "1": 32000,
+        "3": 3200
+      },
+      "extraAttrs": {
+        "102": 455,
+        "103": 455,
+        "104": 455,
+        "151": 455,
+        "155": 455,
+        "156": 455
+      },
+      "score": 2916
+    },
+    "25073": {
+      "id": 25073,
+      "name": 25073,
+      "level": 8,
+      "synthesisLevel": 0,
+      "type": 13,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "1": 32000,
+        "4": 1600
+      },
+      "extraAttrs": {
+        "101": 455,
+        "103": 455,
+        "106": 455,
+        "152": 455,
+        "155": 455,
+        "156": 455
+      },
+      "score": 2916
+    },
+    "25074": {
+      "id": 25074,
+      "name": 25074,
+      "level": 8,
+      "synthesisLevel": 0,
+      "type": 14,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "2": 3200,
+        "3": 3200
+      },
+      "extraAttrs": {
+        "102": 455,
+        "104": 455,
+        "105": 455,
+        "151": 455,
+        "153": 455,
+        "154": 455
+      },
+      "score": 2916
+    },
+    "25075": {
+      "id": 25075,
+      "name": 25075,
+      "level": 8,
+      "synthesisLevel": 0,
+      "type": 15,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "2": 3200,
+        "4": 1600
+      },
+      "extraAttrs": {
+        "101": 455,
+        "105": 455,
+        "106": 455,
+        "152": 455,
+        "153": 455,
+        "154": 455
+      },
+      "score": 2916
+    },
+    "25076": {
+      "id": 25076,
+      "name": 25076,
+      "level": 8,
+      "synthesisLevel": 0,
+      "type": 16,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "3": 3200,
+        "4": 1600
+      },
+      "extraAttrs": {
+        "101": 455,
+        "102": 455,
+        "104": 455,
+        "106": 455,
+        "151": 455,
+        "152": 455
+      },
+      "score": 2916
+    },
+    "25081": {
+      "id": 25081,
+      "name": 25081,
+      "level": 9,
+      "synthesisLevel": 0,
+      "type": 17,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "1": 64000,
+        "2": 6400
+      },
+      "extraAttrs": {
+        "103": 520,
+        "105": 520,
+        "153": 520,
+        "154": 520,
+        "155": 520,
+        "156": 520,
+        "241": 200
+      },
+      "score": 8748
+    },
+    "25082": {
+      "id": 25082,
+      "name": 25082,
+      "level": 9,
+      "synthesisLevel": 0,
+      "type": 18,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "1": 64000,
+        "3": 6400
+      },
+      "extraAttrs": {
+        "102": 520,
+        "103": 520,
+        "104": 520,
+        "151": 520,
+        "155": 520,
+        "156": 520,
+        "242": 200
+      },
+      "score": 8748
+    },
+    "25083": {
+      "id": 25083,
+      "name": 25083,
+      "level": 9,
+      "synthesisLevel": 0,
+      "type": 19,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "1": 64000,
+        "4": 3200
+      },
+      "extraAttrs": {
+        "101": 520,
+        "103": 520,
+        "106": 520,
+        "152": 520,
+        "155": 520,
+        "156": 520,
+        "242": 200
+      },
+      "score": 8748
+    },
+    "25084": {
+      "id": 25084,
+      "name": 25084,
+      "level": 9,
+      "synthesisLevel": 0,
+      "type": 20,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "2": 6400,
+        "3": 6400
+      },
+      "extraAttrs": {
+        "102": 520,
+        "104": 520,
+        "105": 520,
+        "151": 520,
+        "153": 520,
+        "154": 520,
+        "241": 200
+      },
+      "score": 8748
+    },
+    "25085": {
+      "id": 25085,
+      "name": 25085,
+      "level": 9,
+      "synthesisLevel": 0,
+      "type": 21,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "2": 6400,
+        "4": 3200
+      },
+      "extraAttrs": {
+        "101": 520,
+        "105": 520,
+        "106": 520,
+        "152": 520,
+        "153": 520,
+        "154": 520,
+        "241": 200
+      },
+      "score": 8748
+    },
+    "25086": {
+      "id": 25086,
+      "name": 25086,
+      "level": 9,
+      "synthesisLevel": 0,
+      "type": 22,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "3": 6400,
+        "4": 3200
+      },
+      "extraAttrs": {
+        "101": 520,
+        "102": 520,
+        "104": 520,
+        "106": 520,
+        "151": 520,
+        "152": 520,
+        "242": 200
+      },
+      "score": 8748
+    },
+    "25091": {
+      "id": 25091,
+      "name": 25091,
+      "level": 10,
+      "synthesisLevel": 0,
+      "type": 23,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "1": 128000,
+        "2": 12800
+      },
+      "extraAttrs": {
+        "103": 585,
+        "105": 585,
+        "153": 585,
+        "154": 585,
+        "155": 585,
+        "156": 585,
+        "241": 240,
+        "242": 240
+      },
+      "score": 26244
+    },
+    "25092": {
+      "id": 25092,
+      "name": 25092,
+      "level": 10,
+      "synthesisLevel": 0,
+      "type": 24,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "1": 128000,
+        "3": 12800
+      },
+      "extraAttrs": {
+        "102": 585,
+        "103": 585,
+        "104": 585,
+        "151": 585,
+        "155": 585,
+        "156": 585,
+        "241": 240,
+        "242": 240
+      },
+      "score": 26244
+    },
+    "25093": {
+      "id": 25093,
+      "name": 25093,
+      "level": 10,
+      "synthesisLevel": 0,
+      "type": 25,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "1": 128000,
+        "4": 6400
+      },
+      "extraAttrs": {
+        "101": 585,
+        "103": 585,
+        "106": 585,
+        "152": 585,
+        "155": 585,
+        "156": 585,
+        "241": 240,
+        "242": 240
+      },
+      "score": 26244
+    },
+    "25094": {
+      "id": 25094,
+      "name": 25094,
+      "level": 10,
+      "synthesisLevel": 0,
+      "type": 26,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "2": 12800,
+        "3": 12800
+      },
+      "extraAttrs": {
+        "102": 585,
+        "104": 585,
+        "105": 585,
+        "151": 585,
+        "153": 585,
+        "154": 585,
+        "241": 240,
+        "242": 240
+      },
+      "score": 26244
+    },
+    "25095": {
+      "id": 25095,
+      "name": 25095,
+      "level": 10,
+      "synthesisLevel": 0,
+      "type": 27,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "2": 12800,
+        "4": 6400
+      },
+      "extraAttrs": {
+        "101": 585,
+        "105": 585,
+        "106": 585,
+        "152": 585,
+        "153": 585,
+        "154": 585,
+        "241": 240,
+        "242": 240
+      },
+      "score": 26244
+    },
+    "25096": {
+      "id": 25096,
+      "name": 25096,
+      "level": 10,
+      "synthesisLevel": 0,
+      "type": 28,
+      "synthesisValue": 0,
+      "baseAttrs": {
+        "3": 12800,
+        "4": 6400
+      },
+      "extraAttrs": {
+        "101": 585,
+        "102": 585,
+        "104": 585,
+        "106": 585,
+        "151": 585,
+        "152": 585,
+        "241": 240,
+        "242": 240
+      },
+      "score": 26244
+    }
+  }
+}

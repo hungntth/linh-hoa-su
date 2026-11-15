@@ -1,0 +1,238 @@
+<?php
+// Lệnh Vũ Trạch Q32838727 Thêm tính năng, hãy tôn trọng mỗi người học tập. Tuyệt đối không xóa!
+error_reporting(0);
+date_default_timezone_set('PRC');
+header("Content-type: text/html; charset=utf-8");
+//===============Thông tin Key - Vui lòng không sửa đổi hoặc xóa=====================
+$key='// 版本 2022 Powered by 阿泽源码网 www.lyzwlkj.vip 勿改';
+//===============Thông tin Key - Vui lòng không sửa đổi hoặc xóa=====================
+// ========== Thông tin cơ bản ==========
+$gamename  = 'Linh Họa Sư';
+$namecol   = 'Mã người chơi';    // Tên cột đăng nhập của người chơi (= mongo Player.userId)
+$copyright = 'PGaming';
+$gmcode    = 'local-gm-change-me';        // Mật khẩu gm.html GM (dùng để xác thực gmquery.php)
+
+// Văn bản thư hệ thống mặc định khi gửi vật phẩm / gửi thư
+$title     = '系统邮件';
+$contents  = '灵画师-您有新的物品,请查收！';
+
+// Số lượng tối đa cho mỗi lần (kiểm tra kép cả phía trước và phía sau)
+$chargemax = 99999999;
+$itemmax   = 99999999;
+
+// ========== Ánh xạ thực tế của máy chủ ← Dựa trên mã nguồn newServer ==========
+// Tỷ lệ quy đổi: Nạp 1 nhân dân tệ = 10 nguyên bảo (nhân đôi lần nạp đầu; recharge.js calcDiamond xử lý dự phòng)
+$RECHARGE_YUAN_PER_DIAMOND_UNIT = 10;  // 10 kim cương = 1 nhân dân tệ
+
+//   2 → diamond: Đi qua /api/internal/recharge, tính VIP / tổng số tiền nạp / lần nạp đầu, trực tiếp vào túi
+//   1 → silver:  Ánh xạ ID vật phẩm = 2, đi qua tệp đính kèm thư /api/internal/mail/send
+//   1001 → ID vật phẩm: Thiên Diễn Lệnh, đi qua tệp đính kèm thư /api/internal/mail/send
+$CURRENCY_MAP = array(
+    '2' => array(
+        'cur'         => 'diamond',
+        'name'        => 'Kim Cương',
+        'mode'        => 'recharge',      // Đi theo quy trình nạp tiền
+        'desc'        => 'Đi theo quy trình nạp tiền (tính VIP, tổng số tiền nạp, nhân đôi lần nạp đầu), trực tiếp vào túi, 10 kim cương ≈ 1 nhân dân tệ',
+    ),
+    '1' => array(
+        'cur'         => 'silver',
+        'name'        => 'Bạc',
+        'mode'        => 'mail_item',      // Đi theo tệp đính kèm thư (ID vật phẩm = 2)
+        'desc'        => 'Ánh xạ ID vật phẩm = 2, được chuyển đến dưới dạng tệp đính kèm thư, người chơi nhận được khi nhận thư (không tính tổng số tiền nạp)',
+    ),
+    '1001' => array(
+        'cur'         => '1001',          // ID vật phẩm
+        'name'        => 'Mail',
+        'mode'        => 'mail_item',      // Đi theo tệp đính kèm thư
+        'desc'        => 'ID vật phẩm = 1001, được chuyển đến dưới dạng tệp đính kèm thư, người chơi nhận được khi nhận thư (không tính tổng số tiền nạp)',
+    ),
+);
+
+$ITEM_TO_CURRENCY = array(
+    1 => 'diamond', // ID=1 = Nguyên bảo
+    2 => 'silver',  // ID=2 = Bạc
+    6 => 'gold',    // ID=6 = Vàng
+);
+$CURRENCY_TO_ITEM = array(
+    'diamond' => 1,
+    'silver'  => 2,
+    'gold'    => 6,
+);
+
+// ========== API Nội bộ máy chủ trò chơi ==========
+$GAME_HTTP_BASE     = 'http://game:8080';
+$INTERNAL_API_KEY   = 'local-game-api-key-change-me';
+
+// ========== Thư viện ủy quyền CDK ==========
+$PZ = array(
+    'DB_HOST'   => 'mysql',
+    'DB_NAME'   => 'cdks',
+    'DB_USER'   => 'root',
+    'DB_PWD'    => '123456',
+    'DB_PORT'   => '3306',
+    'DB_CHARSET'=> 'utf8',
+);
+
+// ========== Danh sách khu vực (Server) ==========
+$qus = array(
+    '1' => array(
+        'name'      => 'S1.PGaming',
+        'DB_HOST'   => 'mysql',
+        'DB_PORT'   => 3306,
+        'DB_NAME'   => 'cdks',
+        'DB_GAME'   => 'lhs',
+        'DB_USER'   => 'root',
+        'DB_PSWD'   => '123456',
+        'GAME_URL'  => $GAME_HTTP_BASE,
+        'GAME_KEY'  => $INTERNAL_API_KEY,
+        'SERVER_ID' => 1001,
+        'hidde'     => false,
+    ),
+);
+
+// ========== Hàm chung ==========
+function exit_notice($message, $errno, $other = array()) {
+    if (is_array($message)) $message = json_encode($message, JSON_UNESCAPED_UNICODE);
+    $rtn = array('message' => $message, 'errno' => $errno);
+    if (is_array($other) && count($other) > 0) {
+        foreach ($other as $k => $v) $rtn[$k] = $v;
+    }
+    exit(json_encode($rtn, JSON_UNESCAPED_UNICODE));
+}
+
+/**
+ * Thuật toán chữ ký (Signature)
+ * payload = method\npath\ntimestamp\nnonce\nbody
+ *   body: null/'' -> ''; array -> JSON_UNESCAPED_UNICODE; string -> nguyên bản
+ * signature = HMAC-SHA256(API_KEY, payload)
+ */
+function lhs_sign_internal($method, $path, $timestamp, $nonce, $body) {
+    // normalizeBody (Chuẩn hóa thân yêu cầu)
+    if ($body === null || $body === '' || $body === false) $bodyStr = '';
+    else if (is_array($body) || is_object($body))          $bodyStr = json_encode($body, JSON_UNESCAPED_UNICODE);
+    else                                                   $bodyStr = (string)$body;
+
+    $payload = strtoupper($method) . "\n"
+             . $path . "\n"
+             . $timestamp . "\n"
+             . $nonce . "\n"
+             . $bodyStr;
+    global $INTERNAL_API_KEY;
+    return hash_hmac('sha256', $payload, (string)$INTERNAL_API_KEY);
+}
+
+function lhs_random_nonce($len = 16) {
+    $hex = function_exists('random_bytes') ? bin2hex(random_bytes((int)ceil($len / 2)))
+           : substr(md5(uniqid((string)mt_rand(), true)), 0, $len * 2);
+    return substr($hex, 0, $len);
+}
+
+/**
+ * Mã lỗi liên quan đến việc kiểm tra chữ ký
+ */
+function lhs_translate_sign_error($err) {
+    $map = array(
+        'UNAUTHORIZED'      => 'UNAUTHORIZED: INTERNAL_API_KEY không khớp với API_KEY của máy chủ trò chơi. Vui lòng kiểm tra API_KEY=xxxx trong /data/lhs/newServer/.env (hoặc pm2 env), và sửa dòng 73 của config.php thành cùng một giá trị; khởi động lại pm2 rồi thử lại',
+        'INVALID_TIMESTAMP' => 'INVALID_TIMESTAMP: gmquery.php không gửi x-timestamp (hoặc gửi không phải là số). Nếu đây là config.php cũ, vui lòng tải lại config.php lên; nếu vẫn báo lỗi, nghĩa là độ lệch đồng hồ giữa PHP và Node vượt quá ±5 phút, hãy thực thi: date && timedatectl set-timezone Asia/Shanghai  && đồng bộ hwclock rồi thử lại',
+        'TIMESTAMP_EXPIRED' => 'TIMESTAMP_EXPIRED: Thời gian PHP chênh lệch với thời gian Node của máy chủ trò chơi lớn hơn 5 phút (cửa sổ chữ ký). Vui lòng thực thi trên máy chủ: timedatectl set-timezone Asia/Shanghai && chronyc makestep (hoặc ntpdate pool.ntp.org) để đồng bộ NTP cho cả hai phía PHP-FPM và Node; hoặc tạm thời thêm INTERNAL_API_SIGNATURE_WINDOW_MS=6000000 khi khởi động newServer để nới lỏng thành 100 phút',
+        'INVALID_NONCE'     => 'INVALID_NONCE: x-nonce trống hoặc độ dài <8 ký tự, vui lòng tải lên config.php mới nhất',
+        'NONCE_REPLAYED'    => 'NONCE_REPLAYED: Cùng một số ngẫu nhiên nonce bị gửi lại lần thứ 2, làm mới gm.html và thao tác lại là được',
+        'INVALID_SIGNATURE' => 'INVALID_SIGNATURE: Chữ ký HMAC-SHA256 không khớp. Vui lòng xác nhận config.php $INTERNAL_API_KEY hoàn toàn khớp với API_KEY trong env của máy chủ trò chơi; và xác nhận tiền tố đường dẫn /api/internal/* không bị Nginx rewrite mất (gmquery.php → curl kết nối trực tiếp 127.0.0.1:8080, bình thường không đi qua rewrite)',
+        'RATE_LIMITED'      => 'RATE_LIMITED: Số lượng yêu cầu vượt quá ngưỡng giới hạn trong vòng 1 phút, đợi 1 phút rồi thử lại; hoặc tăng INTERNAL_API_MAX_REQUESTS',
+    );
+    $s = is_string($err) ? trim($err) : '';
+    if ($s !== '' && isset($map[$s])) return $map[$s];
+    return $s;
+}
+
+/**
+ * Gọi API nội bộ của máy chủ trò chơi (X-API-Key + Kiểm tra kép chữ ký HMAC)
+ * Tương ứng thực tế với định tuyến /api/internal/* trong HTTPServer.js của newServer
+ *   Quy trình xác thực (HTTPServer.js _authApiKey):
+ *      ① Tiêu đề X-API-Key == Biến môi trường API_KEY → Nếu không thì UNAUTHORIZED
+ *      ② verifyInternalRequest: timestamp(±5 phút) / nonce(≥8 chữ số, không lặp lại) / signature(HMAC-SHA256)
+ *      ③ Giới hạn tốc độ (Rate limit)
+ * @param string $path   Ví dụ /api/internal/player/give/test001
+ * @param mixed  $data   POST body (mảng→JSON), null=GET
+ * @param string $method GET/POST, mặc định tự động xác định
+ * @return array ['success','data','raw','http_code','error']
+ */
+function lhs_internal_call($path, $data = null, $method = null) {
+    global $GAME_HTTP_BASE, $INTERNAL_API_KEY;
+
+    $useMethod = $method;
+    if ($useMethod === null) $useMethod = ($data === null) ? 'GET' : 'POST';
+    $useMethod = strtoupper($useMethod);
+
+    $timestamp = (string)(microtime(true) * 1000);   // Node Date.now() mili-giây
+    $nonce     = lhs_random_nonce(16);
+
+    // Tạo chuỗi body
+    if ($useMethod === 'POST') {
+        $bodyStr = ($data === null || $data === '')
+            ? ''
+            : (is_array($data) || is_object($data)
+                ? json_encode($data, JSON_UNESCAPED_UNICODE)
+                : (string)$data);
+    } else {
+        $bodyStr = '';  // Khi GET, body không tính vào chữ ký
+    }
+    $signature = lhs_sign_internal($useMethod, $path, $timestamp, $nonce, $bodyStr);
+
+    $url = rtrim($GAME_HTTP_BASE, '/') . '/' . ltrim($path, '/');
+    $headers = array(
+        'X-API-Key: '    . $INTERNAL_API_KEY,
+        'X-Timestamp: '  . $timestamp,
+        'X-Nonce: '      . $nonce,
+        'X-Signature: '  . $signature,
+        'Content-Type: application/json; charset=utf-8',
+    );
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+    if ($useMethod === 'POST') {
+        curl_setopt($ch, CURLOPT_POST, true);
+        if ($bodyStr !== '') {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $bodyStr);
+        }
+    } else if ($useMethod !== 'GET') {
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $useMethod);
+        if ($bodyStr !== '') curl_setopt($ch, CURLOPT_POSTFIELDS, $bodyStr);
+    }
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+    $body      = curl_exec($ch);
+    $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $error    = curl_error($ch);
+    curl_close($ch);
+
+    $decoded = json_decode($body === false ? '' : (string)$body, true);
+    $ok      = $body !== false && $httpCode >= 200 && $httpCode < 300
+                && is_array($decoded) && (isset($decoded['success']) ? (bool)$decoded['success'] : true);
+
+    // Chuyển đổi mã lỗi kiểm tra chữ ký thành văn bản tiếng Trung có thể định vị
+    if (!$ok && is_array($decoded) && !empty($decoded['error'])) {
+        $translated = lhs_translate_sign_error($decoded['error']);
+        if ($translated !== '' && $translated !== $decoded['error']) {
+            $decoded['error'] = $translated;
+        }
+    } else if (!$ok && $httpCode == 401 && is_string($body) && strpos($body, 'UNAUTHORIZED') !== false) {
+        // Thân phản hồi 401 trực tiếp là {success:false, error:'UNAUTHORIZED'}, ngay cả khi json_decode thất bại cũng cung cấp gợi ý cho người dùng
+        if (!is_array($decoded)) $decoded = array('error' => lhs_translate_sign_error('UNAUTHORIZED'));
+    }
+
+    return array(
+        'success'   => $ok,
+        'data'      => is_array($decoded) ? $decoded : null,
+        'raw'       => $body === false ? '' : (string)$body,
+        'http_code' => $httpCode,
+        'error'     => (string)$error,
+    );
+}
+?>

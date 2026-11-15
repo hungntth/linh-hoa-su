@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>Linh Họa Sư - Trang Quản Trị GM</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta name="format-detection" content="telephone=no,email=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <script src="static/jquery-2.1.1.min.js" type="text/javascript"></script>
+    <script src="static/xm-select.js" type="text/javascript"></script>
+    <script type="text/javascript" src="static/selectpage/selectpage.js?v=2"></script>
+    <script src="static/layer/layer.js"></script>
+    <script src="static/layer/cannotcopy.js"></script>
+    <link rel="stylesheet" href="static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/selectpage/selectpage.bootstrap3.css" type="text/css">
+    <link rel="stylesheet" href="static/font-awesome-4.7.0/css/font-awesome.min.css" type="text/css">
+    <style type="text/css">
+    body{background-image:url("static/selectpage/bj.jpg");background-size:cover;}
+    </style>
+    <style>
+    main{
+        width:100%;
+        max-width:700px;
+        position:fixed;
+        left:50%;
+        transform: translate(-50%,0);
+        height:100%;
+        overflow-y:auto;
+        overflow-x: hidden;
+    }
+    main::-webkit-scrollbar { display: none; }
+    @media screen and (max-width: 700px) { main { width:98%; } }
+    .function-tab{ display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
+    .function-tab button{ flex:1 1 48%; }
+    .text-muted-xs{ font-size:12px; color:#888; margin-top:4px; display:block; line-height:1.5; }
+    .kv-list{ font-size:13px; line-height:1.8; }
+    .kv-list b{ color:#337ab7; min-width:90px; display:inline-block; }
+    .warn-box{ background:#fffbe6; border:1px solid #ffe58f; color:#874d00; font-size:12px; padding:8px 10px; border-radius:4px; line-height:1.6; }
+    .yuan-hint{ color:#d9534f; font-weight:700; }
+    </style>
+</head>
+<body>
+<main class="main-content">
+<div style="height:2rem;line-height:2rem;display:block;"></div>
+
+<div class="panel panel-primary">
+    <div class="panel-heading"><h4 class="panel-title gamename"></h4></div>
+</div>
+
+<!-- Thông tin cơ bản -->
+<div class="panel panel-primary">
+    <div class="panel-heading"><h4 class="panel-title namecol"></h4></div>
+    <div class="panel-body">
+        <div class="row form-group">
+            <div class="col col-md-12">
+                <select class="form-control" id="qid" name="qid"></select>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col col-md-12">
+                <input type="password" class="form-control" id="gmcode" name="gmcode" placeholder="Mã GM: pgaming" value="">
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col col-md-9">
+                <input type="text" class="form-control" id="lookup_key"
+                       placeholder="Vui lòng nhập tài khoản game hoặc tên nhân vật">
+            </div>
+            <div class="col col-md-3">
+                <button type="button" class="btn btn-info" id="btnLookup"
+                        style="width:100%" onclick="doLookup()">Tìm người chơi</button>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col col-md-12">
+                <input type="text" class="form-control" id="uid" name="uid" readonly="readonly"
+                       style="background:#f8f9fa;cursor:not-allowed;color:#495057;"
+                       placeholder="Vui lòng sử dụng "Tìm người chơi" ở trên để tự động điền" value="">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 充值货币 -->
+<div class="panel panel-primary">
+    <div class="panel-heading"><h4 class="panel-title">Nạp / Phát tiền tệ</h4></div>
+    <div class="panel-body">
+        <div class="row form-group">
+            <div class="col col-md-12">
+                <select class="form-control" id="chargetype" name="chargetype">
+                    <option value="0">Vui lòng chọn loại tiền tệ</option>
+                    <option value="2">Nguyên bảo</option>
+                    <option value="1">Bạc</option>
+                    <option value="1001">Thiên Diễn Lệnh</option>
+                </select>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col col-md-12">
+                <input type="number" class="form-control" id="chargenum" name="chargenum" min="1" max="999999"
+                       onKeyUp="value=value.replace(/[^0-9]+/g,'')" placeholder="Vui lòng nhập số lượng phát" value="">
+                <div id="yuanHintBox" class="warn-box" style="margin-top:8px;display:none;"></div>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col col-md-12">
+                <button class="btn btn-warning sendbtn" style="width:100%">Nạp / Phát tiền tệ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 多功能Thao tác -->
+<div class="panel panel-primary">
+    <div class="panel-heading"><h4 class="panel-title">Bảng thao tác đa chức năng</h4></div>
+    <div class="panel-body">
+        <div class="function-tab">
+            <button class="btn btn-info function-btn active" data-tab="sendMail">Gửi thư</button>
+            <button class="btn btn-info function-btn"        data-tab="broadMail">Thư toàn server</button>
+            <button class="btn btn-info function-btn"        data-tab="queryRc">Tra cứu nạp tiền</button>
+            <button class="btn btn-info function-btn"        data-tab="queryPl">Tra cứu chi tiết</button>
+        </div>
+
+        <!-- Gửi thư -->
+        <div id="tab-sendMail" class="function-container" style="display:block;">
+            <div class="row form-group">
+                <div class="col col-md-12"><div id="mailItemId" class="xm-select-demo"></div></div>
+            </div>
+            <div class="row form-group">
+                <div class="col col-md-12">
+                    <input type="number" class="form-control" id="mailItemNum" min="1" max="99999999" step="1"
+                           placeholder="Số lượng vật phẩm đính kèm" value="1">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col col-md-12"><button class="btn btn-warning sendmailbtn" style="width:100%">Gửi vật phẩm</button></div>
+            </div>
+        </div>
+
+        <!-- Tra cứu nạp tiền -->
+        <div id="tab-queryRc" class="function-container" style="display:none;">
+            <div class="row form-group">
+                <div class="col col-md-12"><button class="btn btn-success queryrcbtn" style="width:100%">Tra cứu tổng quan nạp tiền</button></div>
+            </div>
+            <div class="row form-group">
+                <div class="col col-md-12">
+                    <div class="well well-sm kv-list" id="rcResult" style="display:none;max-height:260px;overflow:auto;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tra cứu chi tiết -->
+        <div id="tab-queryPl" class="function-container" style="display:none;">
+            <div class="row form-group">
+                <div class="col col-md-12"><button class="btn btn-success queryplbtn" style="width:100%">Tra cứu chi tiết người chơi (tiền tệ/túi đồ/VIP)</button></div>
+            </div>
+            <div class="row form-group">
+                <div class="col col-md-12">
+                    <div class="well well-sm kv-list" id="plResult" style="display:none;max-height:360px;overflow:auto;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thư toàn server（群发，仅Theo server发送，SERVER_ID 跟随顶部选区从 config.php 读取） -->
+        <div id="tab-broadMail" class="function-container" style="display:none;">
+            <div class="row form-group">
+                <div class="col col-md-12"><input type="text" class="form-control" id="broadTitle" placeholder="Tiêu đề thư (bắt buộc)" value="Thư hệ thống"></div>
+            </div>
+            <div class="row form-group">
+                <div class="col col-md-12"><textarea class="form-control" id="broadContent" rows="4" placeholder="Nội dung thư (bắt buộc)">Bạn có vật phẩm mới được hệ thống phát, vui lòng kiểm tra!</textarea></div>
+            </div>
+            <div class="row form-group">
+                <div class="col col-md-12"><div id="broadItemId" class="xm-select-demo"></div></div>
+            </div>
+            <div class="row form-group">
+                <div class="col col-md-8">
+                    <input type="number" class="form-control" id="broadItemNum" min="0" step="1" placeholder="Số lượng vật phẩm đính kèm (để trống nếu chỉ gửi chữ)" value="">
+                </div>
+                <div class="col col-md-4">
+                    <input type="number" class="form-control" id="broadExpire" min="1" max="365" step="1" placeholder="Thời hạn (ngày), mặc định 30" value="30">
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col col-md-12"><button class="btn btn-warning btn-broadmail" style="width:100%">Gửi vật phẩm</button></div>
+            </div>
+        </div>
+
+        <!-- Hướng dẫn thao tác -->
+        <div class="row form-group" style="margin-top:10px;">
+            <div class="col col-md-12">
+                <button class="btn btn-danger infobtn" style="width:100%">Hướng dẫn thao tác (bắt buộc đọc)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 授权 -->
+<div class="panel panel-primary">
+    <div class="panel-heading"><h4 class="panel-title">Thông tin cấp quyền</h4></div>
+    <div class="panel-body">
+        <div class="row form-group">
+            <div class="col col-md-12">
+                <input type="text" class="form-control" id="vipUid" name="vipUid"
+                       placeholder="Vui lòng nhập tài khoản game hoặc tên nhân vật" value="">
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col col-md-12">
+                <select class="form-control" id="vip" name="vip">
+                    <option value="0">Vui lòng chọn cấp quyền</option>
+                    <option value="1">lv=1</option>
+                    <option value="2">lv=2</option>
+                </select>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col col-md-12">
+                <input type="text" class="form-control" id="vippswd" name="vippswd"
+                       placeholder="Đặt mật khẩu quản trị cho người dùng này" value="">
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col col-md-12">
+                <button class="btn btn-warning sendvipbtn" style="width:100%">Thêm quyền</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 跳转 -->
+<div class="panel panel-primary">
+    <div class="panel-heading"><h4 class="panel-title">Điều hướng quản trị</h4></div>
+    <div class="panel-body">
+        <div class="row form-group">
+            <div class="col col-md-12">
+                <input class="btn btn-block btn-success" value="Đến trang quản trị người chơi"
+                       type="button" onclick="window.location.href='index.html'">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-body">
+        <h4 class="text-center text-danger" id="copyright"></h4>
+    </div>
+</div>
+</main>
+
+<script>
+var namecol = '';
+var items = [];
+var mailItemSelect;
+var qid = '';
+var gmcode = '';
+
+$('#qid').on('change', function () { qid = $(this).val(); });
+$('#gmcode').on('change keyup blur', function () { gmcode = $.trim($(this).val()); });
+
+// 加载Server/物品
+$(document).ready(function () {
+    $.get('getitems.php', function (text, status) {
+        $(document).attr("title", text.gamename + '-GM授权后台');
+        $('.gamename').html(text.gamename + '-Trang Quản Lý Vật Phẩm GM');
+        namecol = text.namecol;
+        $('.namecol').html(namecol);
+        $('#copyright').html(text.copyright);
+        $('#uid').attr('placeholder', '请输入' + text.namecol);
+        var html = '';
+        qus = text.qus;
+        for (var x in text.qus) {
+            html = '<option value="' + x + '">' + qus[x] + '</option>';
+            $('#qid').append(html);
+        }
+        qid = $('#qid').val();
+        items = text.items;
+        // 单人邮件附件选择器：去掉"无附件"选项（单人邮件强制必须选 1 个物品）
+        var mailItems = items.map(function (it) {
+            return { value: it.value, name: (it.name || '') + '（ID=' + it.value + '）' };
+        });
+        mailItemSelect = xmSelect.render({
+            el: '#mailItemId',
+            tips: 'Vui lòng chọn vật phẩm',
+            empty: 'Chưa chọn (thư cá nhân phải chọn ít nhất 1 vật phẩm đính kèm)',
+            searchTips: 'Nhập tên vật phẩm để tìm kiếm gần đúng',
+            theme: { color: '#1e9fff' },
+            filterable: true,
+            radio: true,
+            clickClose: true,
+            paging: true,
+            pageSize: 50,
+            filterMethod: function (val, item) { return (item.name || '').indexOf(val) != -1; },
+            data: mailItems,
+            initValue: []   // 不预选，强制用户手动选一个
+        });
+        // 【Thư toàn server】Vật phẩm đính kèm xmSelect（复用同一个 items 数据源，支持搜索/分页）
+        var broadMailItems = [{ value: 0, name: 'Không có vật phẩm đính kèm (chỉ gửi nội dung chữ)' }].concat(
+            items.map(function (it) {
+                return { value: it.value, name: (it.name || '') + '（ID=' + it.value + '）' };
+            })
+        );
+        xmSelect.render({
+            el: '#broadItemId',
+            tips: 'Vui lòng chọn vật phẩm',
+            empty: 'Chưa chọn',
+            searchTips: 'Nhập tên vật phẩm để tìm kiếm gần đúng',
+            theme: { color: '#ff5722' },
+            filterable: true,
+            radio: true,
+            clickClose: true,
+            paging: true,
+            pageSize: 50,
+            filterMethod: function (val, item) { return (item.name || '').indexOf(val) != -1; },
+            data: broadMailItems,
+            initValue: [0]
+        });
+    }, 'json');
+});
+
+// Tab 切换
+document.addEventListener("DOMContentLoaded", function () {
+    const buttons = document.querySelectorAll(".function-btn");
+    const tabMap = {
+        sendMail: "tab-sendMail",
+        broadMail: "tab-broadMail",
+        queryRc: "tab-queryRc",
+        queryPl: "tab-queryPl"
+    };
+    buttons.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            buttons.forEach(function (b) { b.classList.remove("active"); });
+            Object.values(tabMap).forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) el.style.display = "none"; // 判空：就算某 Tab DOM 已删也不报错
+            });
+            btn.classList.add("active");
+            var tabName = btn.getAttribute("data-tab");
+            var target = tabMap[tabName];
+            var el = target ? document.getElementById(target) : null;
+            if (el) el.style.display = "block";
+        });
+    });
+
+    // Nguyên bảo实时换算提示
+    function updateYuanHint() {
+        var ct = $('#chargetype').val();
+        var num = parseInt($('#chargenum').val()) || 0;
+        var box = $('#yuanHintBox');
+        if (ct === '2' && num > 0) {
+            var yuan = (num / 10).toFixed(2);
+            box.html("Theo tỷ lệ thực tế của máy chủ 1 tệ = 10 kim cương, lần này sẽ được tính là <b>" + yuan + " 元</b> Tổng nạp额（首充玩家自动双倍Nguyên bảo）。");
+            box.show();
+        } else {
+            box.hide();
+        }
+    }
+    $('#chargetype').on('change', updateYuanHint);
+    $('#chargenum').on('input keyup blur', updateYuanHint);
+    updateYuanHint();
+});
+
+/* ============================================================
+ * 通用：请求 gmquery.php（所有 errno=0 视为成功，含 sendvip）
+ *   requireUid：群发 / 清整服邮件 / 清整服邮件 / 全服背包…这些场景不需要 UID，传 true 可跳过 uid 必填校验
+ * ============================================================ */
+function postGM(action, extra, okMsg, cb, requireUid) {
+    if (requireUid !== false) requireUid = true;
+    if (requireUid) {
+        var user = $.trim($('#uid').val());
+        if (!user) { layer.alert('Vui lòng nhập UID nhân vật', { icon: 2 }); $('#uid').focus(); return false; }
+    }
+    if (!gmcode) { layer.alert('Vui lòng nhập mật khẩu GM', { icon: 2 }); $('#gmcode').focus(); return false; }
+    if (!qid) { layer.alert('请选择Server', { icon: 2 }); return false; }
+    var data = $.extend({ action: action, qid: qid, gmcode: gmcode }, extra || {});
+    if (requireUid) data.uid = user;
+    $.post('gmquery.php', data, function (text) {
+        if (!text || typeof text.errno === 'undefined') {
+            try { text = typeof text === 'string' ? JSON.parse(text) : text; } catch (e) {
+                layer.alert('Định dạng phản hồi bất thường: ' + JSON.stringify(text), { icon: 2 }); return;
+            }
+        }
+        if (text.errno == 0) {
+            var msg = (okMsg ? okMsg : '') + (text.message || '');
+            if (cb) cb(text);
+            else layer.alert(msg || 'Thao tác成功', { icon: 1 });
+        } else {
+            layer.alert(text.message || ('Thất bại errno=' + text.errno), { icon: 2 });
+        }
+    }, 'json').fail(function (xhr) { layer.alert('Yêu cầu thất bại HTTP ' + xhr.status, { icon: 2 }); });
+}
+
+// 充值/发放货币
+$('.sendbtn').on('click', function () {
+    var chargetype = $.trim($('#chargetype').val());
+    if (chargetype === '' || chargetype === '0') {
+        layer.alert('Vui lòng chọn loại tiền tệ', { icon: 2 }); $('#chargetype').focus(); return;
+    }
+    var chargenum = $.trim($('#chargenum').val());
+    if (chargenum === '' || isNaN(chargenum) || parseInt(chargenum) < 1) {
+        layer.alert('Vui lòng nhập số lượng tiền tệ', { icon: 2 }); $('#chargenum').focus(); return;
+    }
+    postGM('sendmoney', { chargetype: chargetype, chargenum: chargenum });
+});
+
+// Gửi thư（标题/正文使用 config.php $title/$contents，前端不再手动输入）
+// 单人邮件：必须至少 1 个附件（禁止空附件/纯文字）
+$('.sendmailbtn').on('click', function () {
+    // 邮件附件从 mailItemSelect 取（支持 player.txt 中所有物品）
+    var midVal = mailItemSelect ? mailItemSelect.getValue('valueStr') : '0';
+    var mid = parseInt(midVal) || 0;
+    var rawNum = $.trim($('#mailItemNum').val());
+    var mnum = (rawNum === '' || rawNum === null || rawNum === undefined) ? 0 : (parseInt(rawNum) || 0);
+    if (mid <= 0) { layer.alert('Thư cá nhân bắt buộc phải chọn vật phẩm đính kèm, không được gửi thư trống (hãy chọn một vật phẩm từ danh sách)', { icon: 2 }); return; }
+    if (mnum < 1) { layer.alert('Đã chọn vật phẩm đính kèm（ID=' + mid + '），请填写Số lượng vật phẩm đính kèm（必须 ≥ 1）', { icon: 2 }); $('#mailItemNum').focus(); return; }
+    var attachments = [{ id: mid, count: mnum }];
+    postGM('sendmail', {
+        attachments: JSON.stringify(attachments)
+    });
+});
+
+// Tra cứu nạp tiền
+$('.queryrcbtn').on('click', function () {
+    postGM('query_recharge', {}, null, function (text) {
+        var d = text;
+        var html = '';
+        html += '<b>UserId:</b> ' + (d.userId || '-') + ' <b>PlayerId:</b> ' + (d.playerId || '-') + '<br>';
+        html += '<b>Tên nhân vật:</b> ' + (d.name || '-') + ' <b>Cấp:</b> ' + (d.level || 1) + '<br>';
+        html += '<b>VIPCấp:</b> ' + (d.vipLevel || 0) + ' <b>Tổng nạp(元):</b> <span class="yuan-hint">' + (d.totalRecharge || 0) + '</span><br>';
+        html += '<b>首充金额(元):</b> ' + (d.firstRecharge || 0) + '<br>';
+        var c = d.currencies || {};
+        html += '<b>当前Nguyên bảo:</b> ' + (c.diamond || 0) + ' <b>金币:</b> ' + (c.gold || 0) + ' <b>Bạc:</b> ' + (c.silver || 0) + '<br>';
+        html += '<b>注册时间:</b> ' + (d.createTime ? new Date(Number(d.createTime)).toLocaleString() : '-') + '<br>';
+        $('#rcResult').html(html).show();
+        layer.alert('Tra cứu thành công:\n' + (text.message || ''), { icon: 1 });
+    });
+});
+
+// 查询玩家详情
+$('.queryplbtn').on('click', function () {
+    postGM('query_player', {}, null, function (p) {
+        var html = '';
+        html += '<b>UserId:</b> ' + (p.userId || '-') + ' <b>PlayerId:</b> ' + (p.playerId || '-') + '<br>';
+        html += '<b>Tên nhân vật:</b> ' + (p.name || '-') + ' <b>Cấp:</b> ' + (p.level || 1) + ' <b>经验:</b> ' + (p.exp || 0) + '<br>';
+        html += '<b>邀请码:</b> ' + (p.inviteCode || '-') + ' <b>代理ID:</b> ' + (p.agentId || '-') + '<br>';
+        var ri = p.rechargeInfo || {};
+        html += '<b>Tổng nạp(元):</b> ' + (ri.totalRecharge || 0) + ' <b>VIP:</b> ' + (ri.vipLevel || 0) + ' <b>首充:</b> ' + (ri.firstRecharge || 0) + '<br>';
+        var c = p.currencies || {};
+        html += '<b>货币:</b> Nguyên bảo=' + (c.diamond || 0) + ' / 金币=' + (c.gold || 0) + ' / Bạc=' + (c.silver || 0) + '<br>';
+        var itemLines = [];
+        var its = p.items || {};
+        Object.keys(its).forEach(function (k) { if (its[k] > 0) itemLines.push(k + '×' + its[k]); });
+        html += '<b>背包:</b> ' + (itemLines.length ? itemLines.join('， ') : '(空)') + '<br>';
+        html += '<b>最后登录:</b> ' + (p.lastLoginTime ? new Date(Number(p.lastLoginTime)).toLocaleString() : '-') + '<br>';
+        $('#plResult').html(html).show();
+        layer.alert('Tra cứu thành công:\n' + (p.message || ''), { icon: 1 });
+    });
+});
+
+// 生成授权
+$('.sendvipbtn').on('click', function () {
+    var vipUid = $.trim($('#vipUid').val());
+    var vipLv  = $.trim($('#vip').val());
+    var pwd    = $.trim($('#vippswd').val());
+    if (!vipUid) { layer.alert('Vui lòng nhập tài khoản game hoặc tên nhân vật', { icon: 2 }); $('#vipUid').focus(); return; }
+    if (!vipLv || vipLv === '0') { layer.alert('Vui lòng chọn cấp quyền', { icon: 2 }); $('#vip').focus(); return; }
+    if (!pwd)    { layer.alert('请输入后台密码', { icon: 2 }); $('#vippswd').focus(); return; }
+    postGM('sendvip', {
+        uid:     vipUid,
+        vip:     vipLv,
+        vippswd: pwd
+    }, null, null, false);  // requireUid=false：不强制读取顶部全局 #uid 输入框（cdk.uid 存账号/Tên nhân vật字符串即可）
+});
+
+// ========== Tìm người chơi：按 登录账号 / Tên nhân vật 查，命中后把 userId 填回 #uid ==========
+function applyRoleChoice(one) {
+    if (!one || !one.userId) return;
+    $('#uid').val(one.userId);
+}
+function renderRolesModal(roles) {
+    if (!roles || !roles.length) return;
+    var rows = [];
+    rows.push('<table class="table table-condensed table-bordered table-hover" style="margin:0;font-size:13px;">');
+    rows.push('<thead><tr class="active">' +
+              '<th style="width:40px;text-align:center;">#</th>' +
+              '<th>Tài khoản (accountId)</th><th>Tên nhân vật</th>' +
+              '<th style="width:60px;text-align:center;">Cấp</th>' +
+              '<th style="width:58px;text-align:center;">Server</th>' +
+              '<th style="width:64px;text-align:center;">VIP</th>' +
+              '<th style="width:96px;text-align:right;">Tổng nạp</th>' +
+              '<th style="width:104px;text-align:center;">Tạo / đăng nhập cuối</th>' +
+              '<th style="width:78px;text-align:center;">Thao tác</th></tr></thead>');
+    rows.push('<tbody>');
+    function fmtTs(ts) {
+        if (!ts) return '—';
+        var d = new Date(Number(ts));
+        if (isNaN(d.getTime())) return '—';
+        function pad(n){ return n<10?'0'+n:''+n; }
+        return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+    }
+    for (var i = 0; i < roles.length; i++) {
+        var o = roles[i];
+        var acc = o.accountId ? String(o.accountId) : '';
+        var nm  = o.name      ? String(o.name)      : '';
+        var lv  = Number(o.level) || 1;
+        var sv  = Number(o.serverId) || 1;
+        var vip = Number(o.vipLevel) || 0;
+        var tot = (typeof o.totalRecharge === 'number') ? o.totalRecharge : 0;
+        var yuan = tot ? ' / ¥' + (tot / 10).toFixed(2) : '';
+        var cre  = fmtTs(o.createTime);
+        var lgo  = fmtTs(o.lastLoginTime);
+        var jqAcc = $('<div/>').text(acc || '—').html();
+        var jqNm  = $('<div/>').text(nm  || '—').html();
+        var jqUid = $('<div/>').text(String(o.userId)).html();
+        rows.push(
+            '<tr data-idx="' + i + '">' +
+              '<td style="text-align:center;">' + (i + 1) + '</td>' +
+              '<td><code>' + jqAcc + '</code></td>' +
+              '<td>' + jqNm + '</td>' +
+              '<td style="text-align:center;">Lv' + lv + '</td>' +
+              '<td style="text-align:center;">S' + sv + '</td>' +
+              '<td style="text-align:center;">' + (vip || '—') + '</td>' +
+              '<td style="text-align:right;">' + tot + yuan + '</td>' +
+              '<td style="text-align:center;font-size:11px;">Tạo:' + cre + '<br>Đăng:' + lgo + '</td>' +
+              '<td style="text-align:center;"><button type="button" class="btn btn-xs btn-primary pickBtn" data-uid="' + jqUid + '">Chọn</button></td>' +
+            '</tr>'
+        );
+    }
+    rows.push('</tbody></table>');
+    var html = '<div style="padding:10px 14px;">' +
+               '<div style="margin-bottom:8px;color:#6c757d;font-size:12px;">Tìm thấy <b style="color:#0d47a1;">' + roles.length + '</b>  người chơi. Hãy nhấn nút "Chọn" bên phải để tự động điền userId vào ô "UID nhân vật" bên dưới.</div>' +
+               rows.join('') +
+               '</div>';
+    var idx = layer.open({
+        type: 1,
+        title: 'Tìm người chơi - Vui lòng chọn nhân vật cần thao tác',
+        area: ['980px', '600px'],
+        shade: 0.3,
+        content: html,
+        success: function (layero) {
+            $(layero).off('click.pick').on('click.pick', '.pickBtn', function (e) {
+                var i = Number($(e.target).closest('tr').attr('data-idx'));
+                if (!isFinite(i) || i < 0 || i >= roles.length) return;
+                applyRoleChoice(roles[i]);
+                layer.close(idx);
+            });
+        }
+    });
+}
+function doLookup() {
+    var gmcode = $.trim($('#gmcode').val());
+    var qid    = $.trim($('#qid').val());
+    var lk     = $.trim($('#lookup_key').val());
+    if (!gmcode) { layer.alert('Vui lòng nhập mật khẩu GM trước', { icon: 2 }); $('#gmcode').focus(); return; }
+    if (!qid)    { layer.alert('Vui lòng chọn server trước', { icon: 2 }); return; }
+    if (!lk)     { layer.alert('Vui lòng nhập đúng tài khoản đăng nhập hoặc tên nhân vật', { icon: 2 }); $('#lookup_key').focus(); return; }
+    var payload = { action: 'lookup_account', qid: qid, gmcode: gmcode, key: lk };
+
+    $('#btnLookup').attr('disabled','disabled').text('Đang tra cứu…');
+
+    // 只允许使用 登录账号 / Tên nhân vật 两 loại匹配方式（后端 gmquery 决定顺序：先 accountId 精确，再 name 精确+模糊）
+    $.post('gmquery.php', payload, function (text) {
+        if (!text || typeof text.errno === 'undefined') {
+            try { text = typeof text === 'string' ? JSON.parse(text) : text; } catch (e) {
+                $('#btnLookup').removeAttr('disabled').text('Tìm người chơi');
+                layer.alert('Định dạng phản hồi bất thường: ' + JSON.stringify(text), { icon: 2 }); return;
+            }
+        }
+        $('#btnLookup').removeAttr('disabled').text('Tìm người chơi');
+
+        if (text.errno == 0) {
+            var d = text || {};
+            var roles = (d.roles && $.isArray(d.roles)) ? d.roles : [];
+            if (d.unique === true && roles.length === 1) {
+                applyRoleChoice(roles[0]);
+                layer.msg('已自动找到玩家并填入 UID', { icon: 1, time: 1200 });
+                return;
+            }
+            if (roles.length) {
+                renderRolesModal(roles);
+                return;
+            }
+            layer.alert(text.message || 'Không tìm thấy người chơi nào', { icon: 0 });
+            return;
+        }
+
+        layer.alert(text.message || ('Tra cứu thất bại errno=' + text.errno), { icon: 2 });
+    }, 'json').fail(function (xhr) {
+        $('#btnLookup').removeAttr('disabled').text('Tìm người chơi');
+        layer.alert('Yêu cầu thất bại HTTP ' + xhr.status, { icon: 2 });
+    });
+}
+// 回车触发查找
+$('#lookup_key').on('keydown', function (e) {
+    if (e.keyCode === 13) { e.preventDefault(); doLookup(); }
+});
+// #uid 输入框：Ctrl+Enter 时，如果内容看起来像账号/Tên nhân vật，丢给 lookup_key 反查一次
+$('#uid').on('keydown', function (e) {
+    if (e.keyCode === 13 && e.ctrlKey) {
+        var v = $.trim($('#uid').val());
+        if (!v) return;
+        // 禁止直接按 userId 查（按需求仅允许 账号/Tên nhân vật 两 loại）
+        if (v.indexOf('u_Wk_') === 0 || v.indexOf('u_wk_') === 0) {
+            layer.alert('Chức năng này chỉ hỗ trợ tài khoản đăng nhập / tên nhân vật, không cho phép tra cứu theo userId', { icon: 2 });
+            return;
+        }
+        $('#lookup_key').val(v);
+        doLookup();
+    }
+});
+
+// ==================== Gửi thư hàng loạt toàn server（仅Theo server发送，SERVER_ID 跟随顶部选区从 config.php 读取，前端不传）====================
+$('.btn-broadmail').on('click', function () {
+    var title = $.trim($('#broadTitle').val());
+    var content = $.trim($('#broadContent').val());
+    var expire = $.trim($('#broadExpire').val());
+    if (!title) { layer.alert('Vui lòng nhập tiêu đề thư', { icon: 2 }); return; }
+    if (!content) { layer.alert('Vui lòng nhập nội dung thư', { icon: 2 }); return; }
+    // Thư toàn server附件（从 broadItemId 取，单选 xmSelect）
+    var broadInst = xmSelect.get('#broadItemId', true);
+    var midVal = broadInst ? broadInst.getValue('valueStr') : '0';
+    var mid = parseInt(midVal) || 0;
+    var rawNum = $.trim($('#broadItemNum').val());
+    var mnum = (rawNum === '' || rawNum === null || rawNum === undefined) ? 0 : (parseInt(rawNum) || 0);
+    var attachments = [];
+    if (mid > 0) {
+        if (mnum < 1) { layer.alert('Đã chọn vật phẩm đính kèm（ID=' + mid + '），Vui lòng nhập số lượng vật phẩm đính kèm (≥1), hoặc chọn lại "Không có vật phẩm đính kèm (chỉ gửi nội dung chữ)"', { icon: 2 }); $('#broadItemNum').focus(); return; }
+        attachments = [{ id: mid, count: mnum }];
+    } else {
+        mnum = 0; attachments = [];
+    }
+    var expDays = (expire === '' || isNaN(expire)) ? 30 : Math.max(1, Math.min(365, parseInt(expire)));
+    var extra = {
+        title: title,
+        content: content,
+        expire_days: expDays,
+        attachments: JSON.stringify(attachments)
+    };
+    // Theo server群发：不需要 uid，SERVER_ID 由 gmquery.php 从 config.php 当前选区 $qus[$qu] 里取
+    postGM('sendmail_all', extra, null, function (text) {
+        var d = text.data || {};
+        var attTxt = (d.attachmentCount || 0) > 0
+            ? '，Vật phẩm đính kèm ' + d.attachmentCount + '  loại'
+            : '（ (thư chỉ có nội dung chữ)）';
+        var scopeDesc = '';
+        if (d.quName) scopeDesc = d.quName + '（SERVER_ID=' + (d.serverId || '?') + '）';
+        else scopeDesc = d.serverId ? ('Server S' + d.serverId) : 'Theo server';
+        layer.alert(
+            '【Gửi thư toàn server thành công】\n' +
+            'Phạm vi mục tiêu：' + scopeDesc + '\n' +
+            'Tổng số thư gửi：' + (d.total || 0) + '  thư' + attTxt + '\n' +
+            'Mã đợt：' + (d.batchId || '-') + '\n\n' +
+            'Lưu ý: Người chơi online sẽ nhận WS ngay lập tức; người chơi offline sẽ tự động nhận khi đăng nhập.',
+            { icon: 1 }
+        );
+    }, false); // 群发不需要 uid
+});
+
+// Hướng dẫn thao tác
+	$('.infobtn').on('click',function(){
+			layer.alert('Vui lòng đọc kỹ hướng dẫn này trước khi thực hiện các thao tác bên trên!<br>1.Nguyên bảo nạp sẽ tự động vào tài khoản!<br>2.Vật phẩm sẽ được nhận qua thư!', {icon: 0});
+　　});
+
+// 禁止 F12 / 右键
+window.onload = function () {
+    document.onkeydown = function () {
+        var e = window.event || arguments[0];
+        if (e.keyCode == 123) return false;
+        if ((e.ctrlKey) && (e.shiftKey) && (e.keyCode == 73)) return false;
+    };
+    document.oncontextmenu = function () { return false; };
+};
+</script>
+</body>
+</html>

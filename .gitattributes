@@ -1,0 +1,9 @@
+www/wwwroot/game/update/** -text
+*.bin -text
+*.png -text
+*.jpg -text
+*.jpeg -text
+*.ktx -text
+*.mp3 -text
+*.ttf -text
+*.wasm -text

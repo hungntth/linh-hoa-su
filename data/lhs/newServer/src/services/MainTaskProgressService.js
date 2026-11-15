@@ -248,8 +248,13 @@ function getAlchemyGenerateCount(player = {}, counter = ensureMainTaskProgressCo
   return Math.max(counter.alchemyGenerateCount, Math.max(0, toSafeInt(info.dayCount, 0)));
 }
 
+// Mounts (坐骑/剑灵) are stored in player.swordInfo; see handlers/mount.js ensureMountInfo.
+function getMountInfo(player = {}) {
+  return ensurePlainObject(player.swordInfo);
+}
+
 function getMountList(player = {}) {
-  const info = ensurePlainObject(player.mountInfo);
+  const info = getMountInfo(player);
   return ensureArray(info.data).filter((row) => (
     row
     && typeof row === 'object'
@@ -260,13 +265,16 @@ function getMountList(player = {}) {
 }
 
 function getMountRideCount(player = {}, counter = ensureMainTaskProgressCounter(player)) {
-  const info = ensurePlainObject(player.mountInfo);
+  // The starter mount is auto-equipped, so the client never shows a "ride" button for it;
+  // count an equipped mount as one ride so the task cannot get stuck.
+  const info = getMountInfo(player);
   const current = toSafeInt(info.equippedUid, 0) > 0 ? 1 : 0;
   return Math.max(counter.mountRideCount, current);
 }
 
 function getMountSummonCount(player = {}, counter = ensureMainTaskProgressCounter(player)) {
-  return Math.max(counter.mountSummonCount, getMountList(player).length);
+  // Owned mounts include the free starter mount, which is not a summon; rely on the counter only.
+  return counter.mountSummonCount;
 }
 
 function getMountUpgradeCount(player = {}, counter = ensureMainTaskProgressCounter(player)) {

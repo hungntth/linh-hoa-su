@@ -5,6 +5,7 @@
 **/reports/
 docker/game.env
 docker/php-config.php
+docker/data/
 docker/seed/*
 !docker/seed/.gitkeep
 www/wwwroot/game/ht/config/config.php

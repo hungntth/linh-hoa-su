@@ -3,7 +3,7 @@ services:
   mongo:
     image: mongo:7.0
     volumes:
-      - mongo-data:/data/db
+      - ./docker/data/mongo:/data/db
       - ./docker/seed:/seed:ro
       - ./docker/mongo-init.sh:/docker-entrypoint-initdb.d/10-restore.sh:ro
       - ./docker/init/mongo-defaults.js:/seed-defaults/mongo-defaults.js:ro
@@ -114,6 +114,5 @@ services:
       - php
     restart: unless-stopped
 volumes:
-  mongo-data:
   redis-data:
   mysql-data:

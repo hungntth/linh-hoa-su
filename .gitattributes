@@ -7,3 +7,4 @@ www/wwwroot/game/update/** -text
 *.mp3 -text
 *.ttf -text
 *.wasm -text
+*.sh text eol=lf

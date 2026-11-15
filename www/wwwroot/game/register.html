@@ -228,6 +228,7 @@
     function saveLogin(account, password, inviteCode) {
       localStorage.setItem('lhs_user_account', account);
       localStorage.setItem('lhs_user_password', password);
+      sessionStorage.setItem('lhs_auto_login', '1');
       if (inviteCode) localStorage.setItem('lhs_invite_code', inviteCode);
     }
     function initInviteCode() {

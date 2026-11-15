@@ -6,6 +6,7 @@ services:
       - mongo-data:/data/db
       - ./docker/seed:/seed:ro
       - ./docker/mongo-init.sh:/docker-entrypoint-initdb.d/10-restore.sh:ro
+      - ./docker/init/mongo-defaults.js:/seed-defaults/mongo-defaults.js:ro
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand({ping:1}).ok ? 0 : 1)"]
       interval: 5s

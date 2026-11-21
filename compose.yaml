@@ -1,56 +1,17 @@
 name: linh-hoa-su
+# Databases (MongoDB, Redis, MySQL) live in the shared platform stack (E:\platform-infra), not here, so this file
+# never creates or recreates them. Connection settings come from `.env` (copy of E:\platform-infra\out\linhhoasu.env).
+# First install on an empty database: `docker compose --profile seed run --rm seed-mongo` and `... seed-mysql`.
 services:
-  mongo:
-    image: mongo:7.0
-    volumes:
-      - ./docker/data/mongo:/data/db
-      - ./docker/seed:/seed:ro
-      - ./docker/mongo-init.sh:/docker-entrypoint-initdb.d/10-restore.sh:ro
-      - ./docker/init/mongo-defaults.js:/seed-defaults/mongo-defaults.js:ro
-    healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand({ping:1}).ok ? 0 : 1)"]
-      interval: 5s
-      timeout: 5s
-      retries: 30
-      start_period: 15s
-    restart: unless-stopped
-  redis:
-    image: redis:7.2-alpine
-    volumes:
-      - redis-data:/data
-      - ./docker/seed:/seed:ro
-    command: ["sh", "-c", "if [ ! -f /data/dump.rdb ] && [ -f /seed/redis-dump.rdb ]; then cp /seed/redis-dump.rdb /data/dump.rdb; fi; exec redis-server --dir /data --appendonly yes"]
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 20
-    restart: unless-stopped
-  mysql:
-    image: mysql:5.7
-    environment:
-      MYSQL_ROOT_PASSWORD: '123456'
-      MYSQL_ROOT_HOST: '%'
-    volumes:
-      - mysql-data:/var/lib/mysql
-      - ./docker/seed:/seed:ro
-      - ./docker/init/mysql-init.sh:/docker-entrypoint-initdb.d/10-cdk.sh:ro
-      - ./docker/init/mysql-schema.sql:/schema.sql:ro
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
-      interval: 5s
-      timeout: 5s
-      retries: 30
-      start_period: 30s
-    restart: unless-stopped
   game:
     build: ./data/lhs/newServer
     env_file: ./docker/game.env
     environment:
       NODE_ENV: development
-      MONGO_URI: mongodb://mongo:27017/lhs_s1001
+      MONGO_URI: mongodb://${MONGO_USER:?copy platform out/linhhoasu.env to .env}:${DB_PASSWORD:?}@infra-mongo:27017/lhs_s1001?authSource=admin&replicaSet=rs0
       MONGO_CONNECT_RETRIES: '90'
-      REDIS_HOST: redis
+      REDIS_HOST: infra-redis
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?}
       REDIS_PREFIX: 's1001:'
       DIST_BASE_URL: http://dist:3001
       CONFIG_BIN_PATH: /seed/config_e5ac72c2.bin
@@ -65,12 +26,19 @@ services:
       SERVER_ID: '1001'
       SERVER_NAME: S1
       REQUIRE_INVITE_REGISTER: '0'
+      # Login hardening: no passwordless SDKAuth fallback, no silent auto-registration, no tokenless WS login.
+      SDK_AUTH_PASSWORD_STRICT: '1'
+      ALLOW_AUTO_REGISTER: '0'
+      # Platform SSO + wallet credit (values from .env; the platform API runs on the Windows host in dev).
+      PLATFORM_URL: http://host.docker.internal:3100
+      PLATFORM_GAME_ID: ${PLATFORM_GAME_ID:?}
+      PLATFORM_SECRET: ${PLATFORM_SECRET:?}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./data/lhs/update/resource/assets/excel/config_e5ac72c2.bin:/seed/config_e5ac72c2.bin:ro
       - ./docker/configMap,json:/configMap,json
-    depends_on:
-      mongo: {condition: service_healthy, restart: true}
-      redis: {condition: service_healthy, restart: true}
+    networks: [default, platform-net]
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/health').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
       interval: 5s
@@ -84,10 +52,9 @@ services:
     environment:
       NODE_ENV: development
       PORT: '3001'
-      MONGODB_URI: mongodb://mongo:27017/lhs_dist
+      MONGODB_URI: mongodb://${MONGO_USER:?}:${DB_PASSWORD:?}@infra-mongo:27017/lhs_dist?authSource=admin&replicaSet=rs0
       MONGO_CONNECT_RETRIES: '90'
-    depends_on:
-      mongo: {condition: service_healthy, restart: true}
+    networks: [default, platform-net]
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/health').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
       interval: 5s
@@ -119,8 +86,9 @@ services:
     volumes:
       - ./www/wwwroot/game:/var/www/game:ro
       - ./docker/php-config.php:/var/www/game/ht/config/config.php:ro
-    depends_on:
-      mysql: {condition: service_healthy}
+    environment:
+      LHS_DB_PASSWORD: ${DB_PASSWORD:?}
+    networks: [default, platform-net]
     restart: unless-stopped
   web:
     image: nginx:1.27-alpine
@@ -136,6 +104,32 @@ services:
       admin: {condition: service_healthy}
       php: {condition: service_started}
     restart: unless-stopped
-volumes:
-  redis-data:
-  mysql-data:
+
+  # One-off seeding of an empty shared database (never overwrites existing data). Not started by `up`.
+  seed-mongo:
+    profiles: [seed]
+    image: mongo:7.0
+    environment:
+      LHS_MONGO: mongodb://${MONGO_USER:?}:${DB_PASSWORD:?}@infra-mongo:27017/?authSource=admin&replicaSet=rs0
+    volumes:
+      - ./docker/seed:/seed:ro
+      - ./docker/init/mongo-defaults.js:/seed-defaults/mongo-defaults.js:ro
+      - ./docker/seed-shared-mongo.sh:/seed-shared-mongo.sh:ro
+    command: ["bash", "/seed-shared-mongo.sh"]
+    networks: [platform-net]
+  seed-mysql:
+    profiles: [seed]
+    image: mysql:5.7
+    environment:
+      MYSQL_USER: ${MYSQL_USER:?}
+      MYSQL_PWD: ${DB_PASSWORD:?}
+    volumes:
+      - ./docker/seed:/seed:ro
+      - ./docker/init/mysql-schema.sql:/schema.sql:ro
+      - ./docker/seed-shared-mysql.sh:/seed-shared-mysql.sh:ro
+    entrypoint: ["bash", "/seed-shared-mysql.sh"]
+    networks: [platform-net]
+
+networks:
+  platform-net:
+    external: true

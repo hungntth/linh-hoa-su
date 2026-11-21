@@ -1,0 +1,65 @@
+<!doctype html>
+<!-- Platform SSO landing: trades ?ticket= for a one-time login code (/api/user/sso-login), then reuses the
+     index.html auto-login hook (lhs_user_account / lhs_user_password / lhs_auto_login). -->
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Đang vào game - LHS</title>
+  <style>
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 16px; box-sizing: border-box;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif; color: #1f2a24; background: #e5f0e6; }
+    .box { max-width: 420px; width: 100%; padding: 28px; border-radius: 20px; background: #fff; text-align: center;
+      box-shadow: 0 16px 48px rgba(31, 42, 36, .15); }
+    .error { color: #ba3a2f; }
+    a { color: #1d6a4e; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <p id="msg">Đang đăng nhập...</p>
+    <p id="back" style="display:none"><a id="backLink" href="#">Quay lại nền tảng</a></p>
+  </div>
+  <script>
+    (function () {
+      var query = new URLSearchParams(location.search);
+      var ticket = query.get('ticket') || '';
+      var msg = document.getElementById('msg');
+      function fail(text) {
+        msg.textContent = text;
+        msg.className = 'error';
+        var back = document.getElementById('back');
+        var link = document.getElementById('backLink');
+        var platformUrl = document.referrer || '';
+        if (/^https?:\/\//.test(platformUrl)) link.href = platformUrl;
+        else link.href = 'javascript:history.back()';
+        back.style.display = '';
+      }
+      // Drop the ticket from the address bar and history: it is single use anyway.
+      try { history.replaceState(null, '', location.pathname + (query.get('sv') ? '?sv=' + encodeURIComponent(query.get('sv')) : '')); } catch (e) {}
+      if (!ticket) return fail('Thiếu vé đăng nhập. Hãy vào game từ trang nền tảng.');
+      fetch('/api/user/sso-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticket: ticket })
+      }).then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (data) { return { ok: res.ok, data: data }; });
+      }).then(function (r) {
+        if (!r.ok || !r.data || !r.data.success || !r.data.account || !r.data.code) {
+          return fail((r.data && r.data.message) || 'Đăng nhập thất bại. Hãy vào game lại từ trang nền tảng.');
+        }
+        try {
+          localStorage.setItem('lhs_user_account', r.data.account);
+          localStorage.setItem('lhs_user_password', r.data.code);
+          sessionStorage.setItem('lhs_auto_login', '1');
+        } catch (e) {
+          return fail('Trình duyệt chặn lưu trữ, không thể đăng nhập.');
+        }
+        location.replace('index.html');
+      }).catch(function () {
+        fail('Không kết nối được máy chủ game.');
+      });
+    })();
+  </script>
+</body>
+</html>

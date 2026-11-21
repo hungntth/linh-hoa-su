@@ -65,10 +65,10 @@ $INTERNAL_API_KEY   = 'local-game-api-key-change-me';
 
 // ========== Thư viện ủy quyền CDK ==========
 $PZ = array(
-    'DB_HOST'   => 'mysql',
-    'DB_NAME'   => 'cdks',
-    'DB_USER'   => 'root',
-    'DB_PWD'    => '123456',
+    'DB_HOST'   => 'infra-mysql',
+    'DB_NAME'   => 'lhs_cdks',
+    'DB_USER'   => 'lhs',
+    'DB_PWD'    => getenv('LHS_DB_PASSWORD'),
     'DB_PORT'   => '3306',
     'DB_CHARSET'=> 'utf8',
 );
@@ -77,12 +77,12 @@ $PZ = array(
 $qus = array(
     '1' => array(
         'name'      => 'S1.PGaming',
-        'DB_HOST'   => 'mysql',
+        'DB_HOST'   => 'infra-mysql',
         'DB_PORT'   => 3306,
-        'DB_NAME'   => 'cdks',
+        'DB_NAME'   => 'lhs_cdks',
         'DB_GAME'   => 'lhs',
-        'DB_USER'   => 'root',
-        'DB_PSWD'   => '123456',
+        'DB_USER'   => 'lhs',
+        'DB_PSWD'   => getenv('LHS_DB_PASSWORD'),
         'GAME_URL'  => $GAME_HTTP_BASE,
         'GAME_KEY'  => $INTERNAL_API_KEY,
         'SERVER_ID' => 1001,

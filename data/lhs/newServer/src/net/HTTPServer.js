@@ -756,6 +756,8 @@ class HTTPServer {
     this.app.use('/api/admin', express.json({ limit: this.adminJsonLimit }));
     // JSON parser for public user registration/login API
     this.app.use('/api/user', express.json({ limit: this.userJsonLimit }));
+    // Platform -> game calls are HMAC-signed over the exact raw body, so keep it as a Buffer.
+    this.app.use('/internal/platform', express.raw({ type: () => true, limit: '64kb' }));
 
     // raw binary body parser for game client requests
     this.app.use('/gameMsg.do', express.raw({ type: '*/*', limit: this.gameMsgBodyLimit }));
@@ -832,7 +834,15 @@ class HTTPServer {
     userRouter.get('/check-account', (req, res) => this._handleUserCheckAccount(req, res));
     userRouter.post('/register', (req, res) => this._handleUserRegister(req, res));
     userRouter.post('/login', (req, res) => this._handleUserLogin(req, res));
+    userRouter.post('/sso-login', (req, res) => {
+      void this._handleUserSsoLogin(req, res);
+    });
     this.app.use('/api/user', userRouter);
+
+    // Platform wallet credit (HMAC-signed by the platform, see src/platform/platformCredit.js).
+    this.app.post('/internal/platform/credit', (req, res) => {
+      void require('../platform/platformCredit').handleCreditRequest(req, res, this.wsServer);
+    });
 
     // Internal API（分销系统等）。
     const internalRouter = express.Router();
@@ -3096,6 +3106,66 @@ class HTTPServer {
         needCreateRole: selectedRole ? 0 : 1,
       },
     });
+  }
+
+  /** Per-IP fixed-window limit for the public SSO login (each call costs a platform round trip). */
+  _allowSsoLoginHit(req) {
+    if (!this._ssoLoginHits) this._ssoLoginHits = new Map();
+    const now = Date.now();
+    const slot = Math.floor(now / 60000);
+    if (this._ssoLoginSlot !== slot) {
+      this._ssoLoginHits.clear();
+      this._ssoLoginSlot = slot;
+    }
+    // Behind nginx (no 'trust proxy'): the last X-Forwarded-For hop is the address nginx saw.
+    const forwarded = String(req.headers['x-forwarded-for'] || '').split(',').map((v) => v.trim()).filter(Boolean);
+    const remoteKey = forwarded.pop() || String(req.ip || (req.socket && req.socket.remoteAddress) || 'unknown');
+    const count = (this._ssoLoginHits.get(remoteKey) || 0) + 1;
+    this._ssoLoginHits.set(remoteKey, count);
+    return count <= Math.max(1, parseIntSafe(process.env.SSO_LOGIN_MAX_PER_MIN, 30));
+  }
+
+  /**
+   * POST /api/user/sso-login {ticket}: redeems a platform launch ticket, finds or creates the linked account and
+   * returns a one-time code the client passes as the SDKAuth (tag 2820) password.
+   */
+  async _handleUserSsoLogin(req, res) {
+    const { redeemTicket } = require('../platform/platformClient');
+    const { ensurePlatformAccount, createSsoCode, getServerId } = require('../platform/platformAccount');
+    try {
+      if (!this._allowSsoLoginHit(req)) {
+        return res.status(429).json({ success: false, code: 'RATE_LIMITED', message: 'Thử lại sau ít phút' });
+      }
+      const ticket = normalizeText(ensurePlainObject(req.body).ticket, 128);
+      if (!/^[A-Za-z0-9_-]{16,128}$/.test(ticket)) {
+        return res.status(400).json({ success: false, code: 'TICKET_INVALID', message: 'Vé đăng nhập không hợp lệ' });
+      }
+      let redeemed;
+      try {
+        redeemed = await redeemTicket(ticket);
+      } catch (err) {
+        const rejected = err && (err.status === 400 || err.status === 401);
+        logger.warn(`[SSO] redeem failed: ${err && err.message}`);
+        return res.status(rejected ? 401 : 502).json({
+          success: false,
+          code: rejected ? 'TICKET_INVALID' : 'PLATFORM_UNAVAILABLE',
+          message: rejected ? 'Vé đăng nhập đã hết hạn hoặc đã dùng' : 'Không kết nối được nền tảng',
+        });
+      }
+      if (redeemed.serverId !== getServerId()) {
+        return res.status(400).json({ success: false, code: 'WRONG_SERVER', message: 'Sai máy chủ' });
+      }
+      const { account } = await ensurePlatformAccount(redeemed.accountId, redeemed.username);
+      if (toSafeInt(account.status, 1) <= 0) {
+        return res.status(403).json({ success: false, code: 'ACCOUNT_BANNED', message: 'Tài khoản đã bị khóa' });
+      }
+      const code = await createSsoCode(account.accountId);
+      logger.info(`[SSO] platform uid ${redeemed.accountId} -> account ${account.accountId}`);
+      return res.json({ success: true, account: account.accountId, code });
+    } catch (err) {
+      logger.error(`[SSO] login failed: ${err && err.message}`);
+      return res.status(500).json({ success: false, code: 'SSO_FAILED', message: 'Đăng nhập thất bại' });
+    }
   }
 
   /**

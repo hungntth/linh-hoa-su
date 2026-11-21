@@ -18,6 +18,8 @@ const accountSchema = new Schema(
   {
     accountId: { type: String, required: true, unique: true, index: true },
     passwordHash: { type: String, required: true },
+    // Platform account id (decimal string) of accounts made by platform SSO / credit; absent on normal accounts.
+    platformUid: { type: String, default: undefined },
     inviteCode: { type: String, default: null, index: true },
     agentId: { type: String, default: null, index: true },
     roles: { type: [roleSchema], default: [] },
@@ -30,6 +32,11 @@ const accountSchema = new Schema(
     timestamps: true,
     minimize: false,
   }
+);
+
+accountSchema.index(
+  { platformUid: 1 },
+  { unique: true, partialFilterExpression: { platformUid: { $type: 'string' } } }
 );
 
 module.exports = model('Account', accountSchema);

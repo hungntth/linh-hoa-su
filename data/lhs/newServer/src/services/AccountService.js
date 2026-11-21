@@ -11,6 +11,8 @@ const BCRYPT_PREFIX = '$2';
 const BCRYPT_ROUNDS = 10;
 const ACCOUNT_ID_PATTERN = /^[a-zA-Z][a-zA-Z0-9_]{3,19}$/;
 const INVITE_CODE_PATTERN = /^[A-Za-z0-9]{6}$/;
+// 'pf<platform id>' accounts are created by platform SSO / credit only (src/platform/platformAccount.js).
+const RESERVED_ACCOUNT_PATTERN = /^pf\d/;
 const WEAK_USER_PASSWORDS = new Set([
   '12345678',
   '123456789',
@@ -231,6 +233,12 @@ async function createAccount(accountIdInput, passwordInput, options = {}) {
     throw new Error('INVALID_ACCOUNT_OR_PASSWORD');
   }
 
+  if (RESERVED_ACCOUNT_PATTERN.test(accountId)) {
+    const error = new Error('Tài khoản này đã được giữ cho đăng nhập từ nền tảng');
+    error.code = 'ACCOUNT_RESERVED';
+    throw error;
+  }
+
   const inviteValidation = validateInviteCode(options.inviteCode);
   if (!inviteValidation.ok) {
     const error = new Error(inviteValidation.message);
@@ -336,14 +344,20 @@ async function ensureAccountForLogin(accountIdInput, passwordInput, options = {}
   }
 }
 
+/**
+ * Account for a role operation. The password must match unless the caller already authenticated the account
+ * (options.preAuthenticated, e.g. platform SSO). The legacy passwordless fallback (rotating SDK tokens) is only kept
+ * when SDK_AUTH_PASSWORD_STRICT is explicitly '0': otherwise anyone could create/reset/delete roles of any account.
+ */
+async function resolveRoleAccount(accountIdInput, options = {}) {
+  if (options.preAuthenticated === true) return findAccount(accountIdInput);
+  const account = await authAccount(accountIdInput, options.password);
+  if (account || String(process.env.SDK_AUTH_PASSWORD_STRICT || '') !== '0') return account;
+  return findAccount(accountIdInput);
+}
+
 async function createRole(accountIdInput, options = {}) {
-  let account = await authAccount(accountIdInput, options.password);
-  if (!account) {
-    // Fallback: SDK may rotate tokens so the client-held password may no longer
-    // match the stored hash.  If the account exists, allow role creation anyway
-    // (same behaviour as SDKAuth's non-strict path).
-    account = await findAccount(accountIdInput);
-  }
+  const account = await resolveRoleAccount(accountIdInput, options);
   if (!account) throw new Error('AUTH_FAILED');
 
   const inviteValidation = validateInviteCode(options.inviteCode || account.inviteCode);
@@ -514,8 +528,7 @@ function pickRole(accountInput, options = {}) {
 }
 
 async function setActiveRole(accountIdInput, options = {}) {
-  let account = await authAccount(accountIdInput, options.password);
-  if (!account) account = await findAccount(accountIdInput);
+  const account = await resolveRoleAccount(accountIdInput, options);
   if (!account) throw new Error('AUTH_FAILED');
 
   const serverId = toSafeInt(options.serverId, getDefaultServerId());
@@ -548,8 +561,7 @@ async function setActiveRole(accountIdInput, options = {}) {
 }
 
 async function deleteRole(accountIdInput, options = {}) {
-  let account = await authAccount(accountIdInput, options.password);
-  if (!account) account = await findAccount(accountIdInput);
+  const account = await resolveRoleAccount(accountIdInput, options);
   if (!account) throw new Error('AUTH_FAILED');
 
   const currentRoles = sortRoles(Array.isArray(account.roles) ? account.roles : []);
@@ -588,6 +600,19 @@ async function upsertLegacyRole(accountIdInput, options = {}) {
   const userId = String(options.userId || '').trim();
   if (!userId) throw new Error('INVALID_USER_ID');
   const serverId = toSafeInt(options.serverId, getDefaultServerId());
+
+  // Never attach a player that already belongs to another account: the candidate userId comes from the client.
+  const [alreadyMine, otherOwner, ownedPlayer] = await Promise.all([
+    Account.findOne({ accountId, 'roles.userId': userId }, { _id: 1 }).lean(),
+    Account.findOne({ accountId: { $ne: accountId }, 'roles.userId': userId }, { _id: 1 }).lean(),
+    Player.findOne({ userId }, { accountId: 1 }).lean(),
+  ]);
+  const playerOwner = normalizeAccountId(ownedPlayer && ownedPlayer.accountId);
+  if (!alreadyMine && (otherOwner || (playerOwner && playerOwner !== accountId))) {
+    const error = new Error('LEGACY_ROLE_OWNED');
+    error.code = 'LEGACY_ROLE_OWNED';
+    throw error;
+  }
 
   let account = await Account.findOne({ accountId });
   if (!account) {
@@ -631,13 +656,19 @@ async function bindLegacyPlayerRole(accountIdInput, options = {}) {
   const legacyPlayer = await Player.findOne({ userId }).lean();
   if (!legacyPlayer) return null;
 
-  const account = await upsertLegacyRole(accountIdInput, {
-    serverId: options.serverId,
-    userId: legacyPlayer.userId,
-    roleId: options.roleId || `legacy_${legacyPlayer.userId}`,
-    name: options.name || legacyPlayer.name,
-    password: options.password,
-  });
+  let account;
+  try {
+    account = await upsertLegacyRole(accountIdInput, {
+      serverId: options.serverId,
+      userId: legacyPlayer.userId,
+      roleId: options.roleId || `legacy_${legacyPlayer.userId}`,
+      name: options.name || legacyPlayer.name,
+      password: options.password,
+    });
+  } catch (err) {
+    if (err && err.code === 'LEGACY_ROLE_OWNED') return null;
+    throw err;
+  }
   const roles = sortRoles(account.roles || []);
   return roles.find((r) => String(r.userId) === legacyPlayer.userId) || null;
 }

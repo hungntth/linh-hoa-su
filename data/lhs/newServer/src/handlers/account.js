@@ -167,6 +167,11 @@ async function handleLogin(params, session, msgUid) {
   if (token) {
     authSession = await authSessionService.get(token);
   }
+  // Without a valid SDKAuth token the client could load any player by naming its userid/platformuid.
+  if ((!authSession || !authSession.userId) && String(process.env.WS_ALLOW_TOKENLESS_LOGIN || '0') !== '1') {
+    logger.warn(`[Account] refused WS login without a valid token (userid=${String(userId).slice(0, 64)})`);
+    throw new Error('AUTH_REQUIRED');
+  }
 
   let key = (authSession && authSession.userId)
     ? String(authSession.userId)

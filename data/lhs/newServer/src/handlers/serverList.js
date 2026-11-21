@@ -1,6 +1,7 @@
 ﻿const logger = require('../logger');
 const accountService = require('../services/AccountService');
 const authSessionService = require('../services/AuthSessionService');
+const { isSsoCode, consumeSsoCode } = require('../platform/platformAccount');
 const configService = require('../services/ConfigService');
 const playerService = require('../services/PlayerService');
 const serverConfigService = require('../services/ServerConfigService');
@@ -435,6 +436,10 @@ async function handleSDKAuth(params = {}, req) {
     let password = requestedPassword;
     let issuedCredentials = null;
 
+    // Platform SSO: the password is a one-time code from /api/user/sso-login, bound to this uid. An unknown or
+    // reused code falls through to the normal password check, which the linked account's unusable hash fails.
+    const ssoAuthenticated = Boolean(accountId) && isSsoCode(password) && await consumeSsoCode(password, accountId);
+
     if ((!accountId || !password) && allowAutoRegister) {
       if (isInviteRegistrationRequired()) {
         return {
@@ -459,14 +464,22 @@ async function handleSDKAuth(params = {}, req) {
       };
     }
 
-    const loginState = await accountService.ensureAccountForLogin(accountId, password, {
-      allowAutoRegister,
-      inviteCode: requestedInviteCode,
-    });
-    let account = loginState.account;
-    if (!account && allowAutoRegister && !strictSdkPassword) {
-      // SDK token may rotate frequently; keep local account playable by uid.
+    let account = null;
+    let newlyCreated = false;
+    if (ssoAuthenticated) {
       account = await accountService.findAccount(accountId);
+      if (account && Number(account.status ?? 1) <= 0) account = null;
+    } else {
+      const loginState = await accountService.ensureAccountForLogin(accountId, password, {
+        allowAutoRegister,
+        inviteCode: requestedInviteCode,
+      });
+      account = loginState.account;
+      newlyCreated = loginState.newlyCreated === true;
+      if (!account && allowAutoRegister && !strictSdkPassword) {
+        // SDK token may rotate frequently; keep local account playable by uid.
+        account = await accountService.findAccount(accountId);
+      }
     }
     if (!account) {
       return {
@@ -509,6 +522,7 @@ async function handleSDKAuth(params = {}, req) {
     if (!selectedRole) {
       const created = await accountService.createRole(accountId, {
         password,
+        preAuthenticated: true, // authenticated above (password, SSO code or legacy non-strict fallback)
         serverId,
         name: params.firstName,
         firstName: params.firstName,
@@ -594,7 +608,7 @@ async function handleSDKAuth(params = {}, req) {
       cancellation: 0,
       regDate: '2025-01-01',
       activeDate: new Date().toISOString().slice(0, 10),
-      newReg: loginState.newlyCreated ? 1 : 0,
+      newReg: newlyCreated ? 1 : 0,
       newServerName: selectedServerData.serverName,
       isGM: 0,
       zfbShortcut: 0,

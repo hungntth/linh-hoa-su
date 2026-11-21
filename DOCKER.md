@@ -1,5 +1,7 @@
 # Chạy Linh Họa Sư bằng Docker
 
+> **Từ 2026-11-21:** MongoDB, Redis và MySQL không còn nằm trong `compose.yaml`. Chúng chạy chung trong stack `E:/platform-infra` (`pnpm infra:up` trong `E:/platform-infra`). Thông tin kết nối nằm ở `.env` của repo này, là bản sao của `E:/platform-infra/out/linhhoasu.env`. Database CDK đổi tên thành `lhs_cdks`. Khi cài mới trên database trống, chạy `docker compose --profile seed run --rm seed-mongo` và `docker compose --profile seed run --rm seed-mysql`. Các đoạn bên dưới nói về MongoDB/MySQL/Redis trong compose là mô tả cũ.
+
 Yêu cầu Docker Desktop chạy Linux containers. Toàn bộ dịch vụ chạy trên máy local, không kết nối VM.
 
 Trong PowerShell tại thư mục dự án:
